@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏃 Step Tracking Dashboard — Team 8 | 2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #F0F4F8;
+            --bg-secondary: #E8EDF3;
+            --bg-card: #FFFFFF;
+            --bg-card-hover: #F7F9FC;
+            --accent-1: #124191;
+            --accent-2: #009DE0;
+            --accent-3: #FF3D71;
+            --accent-4: #FFA940;
+            --accent-5: #00C48C;
+            --text-primary: #1A2138;
+            --text-secondary: #4A5568;
+            --text-muted: #8892A4;
+            --border: #E2E8F0;
+            --gradient-1: linear-gradient(135deg, #124191 0%, #1B6AC9 100%);
+            --gradient-2: linear-gradient(135deg, #009DE0 0%, #0070C0 100%);
+            --gradient-3: linear-gradient(135deg, #FF3D71 0%, #E0245E 100%);
+            --gradient-4: linear-gradient(135deg, #FFA940 0%, #FF7A00 100%);
+            --gradient-5: linear-gradient(135deg, #00C48C 0%, #009E73 100%);
+            --shadow: 0 4px 24px rgba(18,65,145,0.08);
+            --shadow-glow: 0 0 40px rgba(18,65,145,0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(18,65,145,0.04) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(0,157,224,0.04) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(0,196,140,0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .dashboard {
+            position: relative;
+            z-index: 1;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 24px 32px 48px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 28px 36px;
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            margin-bottom: 28px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #124191, #009DE0, #FF3D71, #FFA940, #00C48C);
+        }
+
+        .header-left h1 {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #124191 0%, #1B6AC9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-left p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-top: 4px;
+            font-weight: 400;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(18,65,145,0.08);
+            border: 1px solid rgba(18,65,145,0.2);
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #124191;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: #00C48C;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.3); }
+        }
+
+        /* Demo Banner */
+        .demo-banner {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 24px;
+            background: linear-gradient(135deg, rgba(255,169,64,0.1) 0%, rgba(255,122,0,0.05) 100%);
+            border: 1px solid rgba(255,169,64,0.35);
+            border-radius: 14px;
+            margin-bottom: 24px;
+            font-size: 13px;
+            color: #B87300;
+            font-weight: 500;
+        }
+
+        .demo-icon {
+            font-size: 20px;
+        }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .kpi-card {
+            background: var(--bg-card);
+            border-radius: 18px;
+            padding: 24px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(18,65,145,0.12);
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .kpi-card:nth-child(1)::before { background: var(--gradient-1); }
+        .kpi-card:nth-child(2)::before { background: var(--gradient-2); }
+        .kpi-card:nth-child(3)::before { background: var(--gradient-3); }
+        .kpi-card:nth-child(4)::before { background: var(--gradient-4); }
+        .kpi-card:nth-child(5)::before { background: var(--gradient-5); }
+
+        .kpi-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 16px;
+        }
+
+        .kpi-card:nth-child(1) .kpi-icon { background: rgba(18,65,145,0.1); }
+        .kpi-card:nth-child(2) .kpi-icon { background: rgba(0,157,224,0.1); }
+        .kpi-card:nth-child(3) .kpi-icon { background: rgba(255,61,113,0.1); }
+        .kpi-card:nth-child(4) .kpi-icon { background: rgba(255,169,64,0.12); }
+        .kpi-card:nth-child(5) .kpi-icon { background: rgba(0,196,140,0.1); }
+
+        .kpi-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .kpi-value {
+            font-size: 30px;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: -1px;
+        }
+
+        .kpi-card:nth-child(1) .kpi-value { color: #124191; }
+        .kpi-card:nth-child(2) .kpi-value { color: #0080C0; }
+        .kpi-card:nth-child(3) .kpi-value { color: #E0245E; }
+        .kpi-card:nth-child(4) .kpi-value { color: #D48400; }
+        .kpi-card:nth-child(5) .kpi-value { color: #009E73; }
+
+        .kpi-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Charts Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            border-radius: 18px;
+            padding: 28px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chart-title-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+        }
+
+        /* Ranking / Leaderboard */
+        .leaderboard {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .leader-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            background: var(--bg-secondary);
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .leader-row:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border);
+        }
+
+        .leader-row.gold {
+            background: linear-gradient(135deg, rgba(255,215,0,0.08) 0%, rgba(255,215,0,0.02) 100%);
+            border: 1px solid rgba(255,215,0,0.2);
+        }
+
+        .leader-row.silver {
+            background: linear-gradient(135deg, rgba(192,192,192,0.06) 0%, rgba(192,192,192,0.02) 100%);
+            border: 1px solid rgba(192,192,192,0.15);
+        }
+
+        .leader-row.bronze {
+            background: linear-gradient(135deg, rgba(205,127,50,0.06) 0%, rgba(205,127,50,0.02) 100%);
+            border: 1px solid rgba(205,127,50,0.15);
+        }
+
+        .leader-rank {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .leader-row.gold .leader-rank {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+        }
+
+        .leader-row.silver .leader-rank {
+            background: linear-gradient(135deg, #C0C0C0, #A0A0A0);
+            color: #000;
+        }
+
+        .leader-row.bronze .leader-rank {
+            background: linear-gradient(135deg, #CD7F32, #A0522D);
+            color: #fff;
+        }
+
+        .leader-rank.other {
+            background: var(--bg-card);
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .leader-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .leader-name {
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .leader-avg {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .leader-steps {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent-2);
+            flex-shrink: 0;
+        }
+
+        .leader-bar-wrapper {
+            width: 80px;
+            height: 6px;
+            background: rgba(18,65,145,0.06);
+            border-radius: 3px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .leader-bar {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 1s ease;
+        }
+
+        /* Bottom Grid */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+
+        /* Weekly Heatmap */
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: 120px repeat(7, 1fr);
+            gap: 4px;
+            font-size: 11px;
+        }
+
+        .heatmap-header {
+            font-weight: 700;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 6px 2px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .heatmap-name {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            padding-right: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .heatmap-cell {
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 8px 2px;
+            transition: transform 0.2s ease;
+        }
+
+        .heatmap-cell:hover {
+            transform: scale(1.15);
+            z-index: 2;
+        }
+
+        /* Progress Rings */
+        .progress-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            padding: 20px 0;
+        }
+
+        .ring-wrapper {
+            text-align: center;
+        }
+
+        .ring-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-top: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ring-value {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .footer a {
+            color: var(--accent-1);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+            .charts-grid { grid-template-columns: 1fr; }
+            .bottom-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .dashboard { padding: 16px; }
+            .header { flex-direction: column; gap: 16px; text-align: center; }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .delay-1 { animation-delay: 0.1s; opacity: 0; }
+        .delay-2 { animation-delay: 0.2s; opacity: 0; }
+        .delay-3 { animation-delay: 0.3s; opacity: 0; }
+        .delay-4 { animation-delay: 0.4s; opacity: 0; }
+        .delay-5 { animation-delay: 0.5s; opacity: 0; }
+
+        /* Sparkline mini chart */
+        .sparkline {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #C4CDD9;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #9AA5B4;
+        }
+
+        /* Tab buttons */
+        .tab-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            padding: 8px 18px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--accent-1);
+            border-color: var(--accent-1);
+            color: #fff;
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: var(--bg-card-hover);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Header -->
+        <div class="header animate">
+            <div class="header-left">
+                <h1>🏃 Nokia SEAL TEAM 8</h1>
+                <p>Step Tracking Challenge — Abril / Maio 2026 &nbsp;•&nbsp; 1 de 39 dias</p>
+            </div>
+            <div class="header-right">
+                <div class="header-badge">
+                    <div class="pulse-dot"></div>
+                    <span>38 dias restantes</span>
+                </div>
+                <div class="header-badge" style="background: rgba(0,157,224,0.08); border-color: rgba(0,157,224,0.2);">
+                    <span style="color: #009DE0;">👥 10 membros</span>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="demo-banner">
+            <span class="demo-icon">🎯</span>
+            <span>MODO DEMONSTRAÇÃO — Os dados abaixo são simulados. Preencha a planilha Excel e execute novamente para ver dados reais.</span>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="kpi-grid">
+            <div class="kpi-card animate delay-1">
+                <div class="kpi-icon">👣</div>
+                <div class="kpi-label">Total Passos (Time)</div>
+                <div class="kpi-value" id="kpi-total">111,801</div>
+                <div class="kpi-sub">Meta: 3,900,000</div>
+            </div>
+            <div class="kpi-card animate delay-2">
+                <div class="kpi-icon">📊</div>
+                <div class="kpi-label">Média Diária / Time</div>
+                <div class="kpi-value" id="kpi-avg">111,801</div>
+                <div class="kpi-sub">Meta diária: 100,000</div>
+            </div>
+            <div class="kpi-card animate delay-3">
+                <div class="kpi-icon">🏆</div>
+                <div class="kpi-label">Top Performer</div>
+                <div class="kpi-value" style="font-size: 22px;">Ramiro</div>
+                <div class="kpi-sub">14,842 passos</div>
+            </div>
+            <div class="kpi-card animate delay-4">
+                <div class="kpi-icon">🔥</div>
+                <div class="kpi-label">Record do Dia</div>
+                <div class="kpi-value">14,842</div>
+                <div class="kpi-sub">Ramiro — Apr 07</div>
+            </div>
+            <div class="kpi-card animate delay-5">
+                <div class="kpi-icon">🎯</div>
+                <div class="kpi-label">Progresso</div>
+                <div class="kpi-value">2.9%</div>
+                <div class="kpi-sub">Dia 1 de 39</div>
+            </div>
+        </div>
+
+        <!-- Main Charts Row -->
+        <div class="charts-grid animate delay-2">
+            <div class="chart-card">
+                <div class="chart-title">
+                    <div class="chart-title-icon" style="background: rgba(18,65,145,0.1);">📈</div>
+                    Passos Diários do Time
+                </div>
+                <div class="tab-group">
+                    <button class="tab-btn active" onclick="setDailyChart('total')">Total Time</button>
+                    <button class="tab-btn" onclick="setDailyChart('individual')">Individual</button>
+                    <button class="tab-btn" onclick="setDailyChart('stacked')">Stacked</button>
+                </div>
+                <div class="chart-container" style="height: 340px;">
+                    <canvas id="dailyChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-title">
+                    <div class="chart-title-icon" style="background: rgba(255,61,113,0.1);">🏅</div>
+                    Ranking de Passos
+                </div>
+                <div class="leaderboard" id="leaderboard"></div>
+            </div>
+        </div>
+
+        <!-- Bottom Grid -->
+        <div class="bottom-grid">
+            <div class="chart-card animate delay-3">
+                <div class="chart-title">
+                    <div class="chart-title-icon" style="background: rgba(0,157,224,0.1);">📅</div>
+                    Evolução Semanal
+                </div>
+                <div class="chart-container" style="height: 320px;">
+                    <canvas id="weeklyChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card animate delay-4">
+                <div class="chart-title">
+                    <div class="chart-title-icon" style="background: rgba(0,196,140,0.1);">🎯</div>
+                    Meta Diária (10,000 passos)
+                </div>
+                <div class="chart-container" style="height: 320px;">
+                    <canvas id="goalChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Heatmap -->
+        <div class="chart-card animate delay-5" style="margin-bottom: 28px;">
+            <div class="chart-title">
+                <div class="chart-title-icon" style="background: rgba(255,169,64,0.1);">🗓️</div>
+                Últimos 7 Dias — Heatmap de Atividade
+            </div>
+            <div class="heatmap-grid" id="heatmap"></div>
+        </div>
+
+        <!-- Individual Performance -->
+        <div class="chart-card animate delay-5" style="margin-bottom: 28px;">
+            <div class="chart-title">
+                <div class="chart-title-icon" style="background: rgba(18,65,145,0.08);">👤</div>
+                Performance Individual — Média vs Meta
+            </div>
+            <div class="chart-container" style="height: 360px;">
+                <canvas id="individualChart"></canvas>
+            </div>
+        </div>
+
+        <div class="footer">
+            Dashboard gerado em 07/04/2026 às 16:47 &nbsp;•&nbsp; Step Tracking Challenge 2026 — Team 8
+        </div>
+    </div>
+
+    <script>
+        // Data
+        const memberData = [{"name": "Juan Carloss Moran", "total": 12238, "daily": [12238, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 12238, "color": "#124191"}, {"name": "Humberto Silva", "total": 9307, "daily": [9307, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 9307, "color": "#009DE0"}, {"name": "Roc\u00edo P\u00e9rez", "total": 8370, "daily": [8370, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 8370, "color": "#FF3D71"}, {"name": "Ruben Salomoni", "total": 12286, "daily": [12286, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 12286, "color": "#00C48C"}, {"name": "Eron Netto", "total": 12640, "daily": [12640, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 12640, "color": "#FFA940"}, {"name": "Lizandro Ortiz Corzo", "total": 10658, "daily": [10658, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 10658, "color": "#7B61FF"}, {"name": "Alexis Rodriguez", "total": 14002, "daily": [14002, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 14002, "color": "#FF6F91"}, {"name": "Cynthia Vellena", "total": 8990, "daily": [8990, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 8990, "color": "#0080C0"}, {"name": "Ramiro Campos", "total": 14842, "daily": [14842, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 14842, "color": "#F7B731"}, {"name": "Jesse Pereira Galvez", "total": 8468, "daily": [8468, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 8468, "color": "#26D07C"}];
+        const dateLabels = ["Apr 07", "Apr 08", "Apr 09", "Apr 10", "Apr 11", "Apr 12", "Apr 13", "Apr 14", "Apr 15", "Apr 16", "Apr 17", "Apr 18", "Apr 19", "Apr 20", "Apr 21", "Apr 22", "Apr 23", "Apr 24", "Apr 25", "Apr 26", "Apr 27", "Apr 28", "Apr 29", "Apr 30", "May 01", "May 02", "May 03", "May 04", "May 05", "May 06", "May 07", "May 08", "May 09", "May 10", "May 11", "May 12", "May 13", "May 14", "May 15"];
+        const shortLabels = ["07/04", "08/04", "09/04", "10/04", "11/04", "12/04", "13/04", "14/04", "15/04", "16/04", "17/04", "18/04", "19/04", "20/04", "21/04", "22/04", "23/04", "24/04", "25/04", "26/04", "27/04", "28/04", "29/04", "30/04", "01/05", "02/05", "03/05", "04/05", "05/05", "06/05", "07/05", "08/05", "09/05", "10/05", "11/05", "12/05", "13/05", "14/05", "15/05"];
+        const weekLabels = ["Sem 15", "Sem 16", "Sem 17", "Sem 18", "Sem 19", "Sem 20"];
+        const weeklyMemberData = {"Juan Carloss Moran": [12238, 0, 0, 0, 0, 0], "Humberto Silva": [9307, 0, 0, 0, 0, 0], "Roc\u00edo P\u00e9rez": [8370, 0, 0, 0, 0, 0], "Ruben Salomoni": [12286, 0, 0, 0, 0, 0], "Eron Netto": [12640, 0, 0, 0, 0, 0], "Lizandro Ortiz Corzo": [10658, 0, 0, 0, 0, 0], "Alexis Rodriguez": [14002, 0, 0, 0, 0, 0], "Cynthia Vellena": [8990, 0, 0, 0, 0, 0], "Ramiro Campos": [14842, 0, 0, 0, 0, 0], "Jesse Pereira Galvez": [8468, 0, 0, 0, 0, 0]};
+        const DAILY_GOAL = 10000;
+        const daysElapsed = 1;
+
+        // Chart.js default config
+        Chart.defaults.color = '#4A5568';
+        Chart.defaults.borderColor = 'rgba(226,232,240,0.8)';
+        Chart.defaults.font.family = "'Inter', sans-serif";
+
+        // ===== DAILY CHART =====
+        let dailyChart;
+        function setDailyChart(mode) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            if (dailyChart) dailyChart.destroy();
+            const ctx = document.getElementById('dailyChart').getContext('2d');
+            const activeLabels = shortLabels.slice(0, daysElapsed);
+
+            if (mode === 'total') {
+                const totals = [];
+                for (let i = 0; i < daysElapsed; i++) {
+                    let sum = 0;
+                    memberData.forEach(m => sum += m.daily[i]);
+                    totals.push(sum);
+                }
+                const gradient = ctx.createLinearGradient(0, 0, 0, 340);
+                gradient.addColorStop(0, 'rgba(18,65,145,0.25)');
+                gradient.addColorStop(1, 'rgba(18,65,145,0.02)');
+                dailyChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: activeLabels,
+                        datasets: [{
+                            label: 'Total Time',
+                            data: totals,
+                            borderColor: '#124191',
+                            backgroundColor: gradient,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#124191',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            borderWidth: 3,
+                        },
+                        {
+                            label: 'Meta Diária',
+                            data: Array(daysElapsed).fill(DAILY_GOAL * memberData.length),
+                            borderColor: 'rgba(255,61,113,0.6)',
+                            borderDash: [8, 4],
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            fill: false,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: true, position: 'top', labels: { usePointStyle: true, padding: 20 } } },
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: 'rgba(226,232,240,0.6)' },
+                                ticks: { callback: v => (v/1000).toFixed(0) + 'k' } },
+                            x: { grid: { display: false } }
+                        },
+                        interaction: { mode: 'index', intersect: false }
+                    }
+                });
+            } else if (mode === 'individual') {
+                const datasets = memberData.map(m => ({
+                    label: m.name.split(' ')[0],
+                    data: m.daily.slice(0, daysElapsed),
+                    borderColor: m.color,
+                    backgroundColor: m.color + '20',
+                    tension: 0.4,
+                    pointRadius: 2,
+                    borderWidth: 2,
+                    fill: false,
+                }));
+                dailyChart = new Chart(ctx, {
+                    type: 'line',
+                    data: { labels: activeLabels, datasets },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: true, position: 'top', labels: { usePointStyle: true, padding: 12, font: { size: 11 } } } },
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: 'rgba(226,232,240,0.6)' },
+                                ticks: { callback: v => (v/1000).toFixed(0) + 'k' } },
+                            x: { grid: { display: false } }
+                        },
+                        interaction: { mode: 'index', intersect: false }
+                    }
+                });
+            } else {
+                const datasets = memberData.map(m => ({
+                    label: m.name.split(' ')[0],
+                    data: m.daily.slice(0, daysElapsed),
+                    backgroundColor: m.color + 'CC',
+                    borderWidth: 0,
+                    borderRadius: 2,
+                }));
+                dailyChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: { labels: activeLabels, datasets },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: true, position: 'top', labels: { usePointStyle: true, padding: 12, font: { size: 11 } } } },
+                        scales: {
+                            y: { stacked: true, beginAtZero: true, grid: { color: 'rgba(226,232,240,0.6)' },
+                                ticks: { callback: v => (v/1000).toFixed(0) + 'k' } },
+                            x: { stacked: true, grid: { display: false } }
+                        },
+                        interaction: { mode: 'index', intersect: false }
+                    }
+                });
+            }
+        }
+
+        // Init daily chart
+        (function() {
+            const ctx = document.getElementById('dailyChart').getContext('2d');
+            const totals = [];
+            for (let i = 0; i < daysElapsed; i++) {
+                let sum = 0;
+                memberData.forEach(m => sum += m.daily[i]);
+                totals.push(sum);
+            }
+            const gradient = ctx.createLinearGradient(0, 0, 0, 340);
+            gradient.addColorStop(0, 'rgba(18,65,145,0.25)');
+            gradient.addColorStop(1, 'rgba(18,65,145,0.02)');
+            dailyChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: shortLabels.slice(0, daysElapsed),
+                    datasets: [{
+                        label: 'Total Time',
+                        data: totals,
+                        borderColor: '#124191',
+                        backgroundColor: gradient,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#124191',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        borderWidth: 3,
+                    },
+                    {
+                        label: 'Meta Diária',
+                        data: Array(daysElapsed).fill(DAILY_GOAL * memberData.length),
+                        borderColor: 'rgba(255,61,113,0.6)',
+                        borderDash: [8, 4],
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        fill: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: true, position: 'top', labels: { usePointStyle: true, padding: 20 } } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(226,232,240,0.6)' },
+                            ticks: { callback: v => (v/1000).toFixed(0) + 'k' } },
+                        x: { grid: { display: false } }
+                    },
+                    interaction: { mode: 'index', intersect: false }
+                }
+            });
+        })();
+
+        // ===== LEADERBOARD =====
+        (function() {
+            const sorted = [...memberData].sort((a, b) => b.total - a.total);
+            const maxSteps = sorted[0]?.total || 1;
+            const lb = document.getElementById('leaderboard');
+            sorted.forEach((m, i) => {
+                const cls = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+                const rankCls = i >= 3 ? 'other' : '';
+                const pct = (m.total / maxSteps * 100).toFixed(0);
+                lb.innerHTML += `
+                    <div class="leader-row ${cls}">
+                        <div class="leader-rank ${rankCls}">${i+1}</div>
+                        <div class="leader-info">
+                            <div class="leader-name">${m.name}</div>
+                            <div class="leader-avg">⌀ ${m.avg.toLocaleString()} / dia</div>
+                        </div>
+                        <div class="leader-bar-wrapper">
+                            <div class="leader-bar" style="width: ${pct}%; background: ${m.color};"></div>
+                        </div>
+                        <div class="leader-steps">${m.total.toLocaleString()}</div>
+                    </div>`;
+            });
+        })();
+
+        // ===== WEEKLY CHART =====
+        (function() {
+            const ctx = document.getElementById('weeklyChart').getContext('2d');
+            const datasets = memberData.map(m => ({
+                label: m.name.split(' ')[0],
+                data: weeklyMemberData[m.name] || [],
+                backgroundColor: m.color + 'DD',
+                borderWidth: 0,
+                borderRadius: 6,
+            }));
+            new Chart(ctx, {
+                type: 'bar',
+                data: { labels: weekLabels, datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: true, position: 'top', labels: { usePointStyle: true, padding: 12, font: { size: 11 } } } },
+                    scales: {
+                        y: { stacked: true, beginAtZero: true, grid: { color: 'rgba(226,232,240,0.6)' },
+                            ticks: { callback: v => (v/1000).toFixed(0) + 'k' } },
+                        x: { stacked: true, grid: { display: false } }
+                    }
+                }
+            });
+        })();
+
+        // ===== GOAL CHART (Radar) =====
+        (function() {
+            const ctx = document.getElementById('goalChart').getContext('2d');
+            const names = memberData.map(m => m.name.split(' ')[0]);
+            const avgs = memberData.map(m => m.avg);
+            const goals = memberData.map(() => DAILY_GOAL);
+
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: names,
+                    datasets: [
+                        {
+                            label: 'Média Diária',
+                            data: avgs,
+                            borderColor: '#124191',
+                            backgroundColor: 'rgba(18,65,145,0.12)',
+                            borderWidth: 2,
+                            pointBackgroundColor: '#124191',
+                            pointRadius: 4,
+                        },
+                        {
+                            label: 'Meta',
+                            data: goals,
+                            borderColor: 'rgba(255,61,113,0.6)',
+                            backgroundColor: 'rgba(255,61,113,0.05)',
+                            borderWidth: 2,
+                            borderDash: [5, 3],
+                            pointRadius: 0,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'top', labels: { usePointStyle: true, padding: 16 } } },
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(226,232,240,0.6)' },
+                            angleLines: { color: 'rgba(226,232,240,0.6)' },
+                            pointLabels: { font: { size: 11, weight: '600' }, color: '#8892A4' },
+                            ticks: { display: false }
+                        }
+                    }
+                }
+            });
+        })();
+
+        // ===== HEATMAP =====
+        (function() {
+            const grid = document.getElementById('heatmap');
+
+            // Get last 7 days indices
+            const last7Start = Math.max(0, daysElapsed - 7);
+            const last7End = daysElapsed;
+            const days7Labels = dateLabels.slice(last7Start, last7End);
+
+            // Headers
+            grid.innerHTML = '<div class="heatmap-header"></div>';
+            days7Labels.forEach(d => {
+                grid.innerHTML += `<div class="heatmap-header">${d}</div>`;
+            });
+            // Pad if less than 7
+            for (let i = days7Labels.length; i < 7; i++) {
+                grid.innerHTML += `<div class="heatmap-header">—</div>`;
+            }
+
+            // Member rows
+            memberData.forEach(m => {
+                grid.innerHTML += `<div class="heatmap-name">${m.name.split(' ')[0]}</div>`;
+                for (let i = last7Start; i < last7End; i++) {
+                    const val = m.daily[i] || 0;
+                    const pct = Math.min(val / DAILY_GOAL, 1.5);
+                    let bg, fg;
+                    if (val === 0) {
+                        bg = 'rgba(226,232,240,0.4)';
+                        fg = '#8892A4';
+                    } else if (pct < 0.5) {
+                        bg = 'rgba(255,61,113,0.2)';
+                        fg = '#E0245E';
+                    } else if (pct < 0.8) {
+                        bg = 'rgba(255,169,64,0.2)';
+                        fg = '#D48400';
+                    } else if (pct < 1.0) {
+                        bg = 'rgba(0,157,224,0.15)';
+                        fg = '#009DE0';
+                    } else {
+                        bg = 'rgba(0,196,140,0.2)';
+                        fg = '#009E73';
+                    }
+                    const display = val > 0 ? (val/1000).toFixed(1) + 'k' : '—';
+                    grid.innerHTML += `<div class="heatmap-cell" style="background:${bg}; color:${fg};">${display}</div>`;
+                }
+                // Pad
+                for (let i = days7Labels.length; i < 7; i++) {
+                    grid.innerHTML += `<div class="heatmap-cell" style="background:rgba(226,232,240,0.3); color:#8892A4;">—</div>`;
+                }
+            });
+        })();
+
+        // ===== INDIVIDUAL CHART =====
+        (function() {
+            const ctx = document.getElementById('individualChart').getContext('2d');
+            const sorted = [...memberData].sort((a, b) => b.avg - a.avg);
+            const names = sorted.map(m => m.name);
+            const avgs = sorted.map(m => m.avg);
+            const bgColors = sorted.map(m => m.color + 'CC');
+            const borderColors = sorted.map(m => m.color);
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: names,
+                    datasets: [
+                        {
+                            label: 'Média Diária',
+                            data: avgs,
+                            backgroundColor: bgColors,
+                            borderColor: borderColors,
+                            borderWidth: 2,
+                            borderRadius: 8,
+                            barThickness: 36,
+                        }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        annotation: {}
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(226,232,240,0.6)' },
+                            ticks: { callback: v => (v/1000).toFixed(0) + 'k' }
+                        },
+                        y: {
+                            grid: { display: false },
+                            ticks: { font: { size: 12, weight: '600' } }
+                        }
+                    }
+                },
+                plugins: [{
+                    afterDraw: function(chart) {
+                        const ctx = chart.ctx;
+                        // Draw goal line
+                        const xScale = chart.scales.x;
+                        const goalX = xScale.getPixelForValue(DAILY_GOAL);
+                        const yScale = chart.scales.y;
+                        ctx.save();
+                        ctx.strokeStyle = 'rgba(255,61,113,0.6)';
+                        ctx.lineWidth = 2;
+                        ctx.setLineDash([6, 4]);
+                        ctx.beginPath();
+                        ctx.moveTo(goalX, yScale.top);
+                        ctx.lineTo(goalX, yScale.bottom);
+                        ctx.stroke();
+                        ctx.fillStyle = '#E0245E';
+                        ctx.font = '11px Inter';
+                        ctx.fillText('Meta', goalX + 4, yScale.top + 12);
+                        ctx.restore();
+                    }
+                }]
+            });
+        })();
+
+        // Number animation for KPIs
+        function animateValue(id, start, end, duration) {
+            const el = document.getElementById(id);
+            if (!el || end === 0) return;
+            const range = end - start;
+            const startTime = performance.now();
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const current = Math.floor(start + range * eased);
+                el.textContent = current.toLocaleString();
+                if (progress < 1) requestAnimationFrame(update);
+            }
+            requestAnimationFrame(update);
+        }
+
+        animateValue('kpi-total', 0, 111801, 1500);
+        animateValue('kpi-avg', 0, 111801, 1200);
+    </script>
+</body>
+</html>
