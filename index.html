@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en-US">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -506,8 +506,51 @@
 
         @media (max-width: 768px) {
             .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-            .dashboard { padding: 16px; }
-            .header { flex-direction: column; gap: 16px; text-align: center; }
+            .dashboard { padding: 12px; }
+            .header {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+                padding: 18px 16px;
+            }
+            .header-left h1 { font-size: 20px; }
+            .header-left p { font-size: 12px; }
+            .header-right { flex-wrap: wrap; justify-content: center; gap: 8px; }
+            .header-badge { font-size: 12px; padding: 6px 12px; }
+            .chart-card { padding: 16px; }
+            .chart-title { font-size: 14px; }
+            .kpi-card { padding: 16px; }
+            .kpi-value { font-size: 22px; }
+            .kpi-label { font-size: 11px; }
+            .demo-banner { padding: 12px 16px; font-size: 12px; }
+            .tab-group { flex-wrap: wrap; }
+            .tab-btn { padding: 8px 14px; font-size: 11px; }
+            .heatmap-grid {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                min-width: 0;
+            }
+            .leader-row { padding: 10px 12px; gap: 10px; }
+            .leader-bar-wrapper { width: 50px; }
+            .leader-steps { font-size: 12px; }
+            .leader-name { font-size: 12px; }
+            .footer { font-size: 11px; }
+        }
+
+        @media (max-width: 480px) {
+            .kpi-grid { grid-template-columns: 1fr; gap: 12px; }
+            .dashboard { padding: 8px; }
+            .header { padding: 14px 12px; margin-bottom: 16px; }
+            .header-left h1 { font-size: 18px; }
+            .kpi-value { font-size: 20px; }
+            .chart-container { min-height: 220px; }
+            .progress-container { flex-wrap: wrap; gap: 20px; }
+            .heatmap-grid {
+                grid-template-columns: 80px repeat(7, minmax(50px, 1fr));
+            }
+            .heatmap-name { font-size: 10px; }
+            .heatmap-cell { font-size: 9px; padding: 6px 1px; }
+            .leader-bar-wrapper { display: none; }
         }
 
         /* Animations */
@@ -584,15 +627,15 @@
         <div class="header animate">
             <div class="header-left">
                 <h1>🏃 Nokia SEAL TEAM 8</h1>
-                <p>Step Tracking Challenge — Abril / Maio 2026 &nbsp;•&nbsp; 1 de 39 dias</p>
+                <p>Step Tracking Challenge — April / May 2026 &nbsp;•&nbsp; Day 1 of 39</p>
             </div>
             <div class="header-right">
                 <div class="header-badge">
                     <div class="pulse-dot"></div>
-                    <span>38 dias restantes</span>
+                    <span>38 days remaining</span>
                 </div>
                 <div class="header-badge" style="background: rgba(0,157,224,0.08); border-color: rgba(0,157,224,0.2);">
-                    <span style="color: #009DE0;">👥 10 membros</span>
+                    <span style="color: #009DE0;">👥 10 members</span>
                 </div>
             </div>
         </div>
@@ -600,40 +643,40 @@
         
         <div class="demo-banner">
             <span class="demo-icon">🎯</span>
-            <span>MODO DEMONSTRAÇÃO — Os dados abaixo são simulados. Preencha a planilha Excel e execute novamente para ver dados reais.</span>
+            <span>DEMO MODE — The data below is simulated. Fill in the Excel spreadsheet and run again to see real data.</span>
         </div>
 
         <!-- KPI Cards -->
         <div class="kpi-grid">
             <div class="kpi-card animate delay-1">
                 <div class="kpi-icon">👣</div>
-                <div class="kpi-label">Total Passos (Time)</div>
+                <div class="kpi-label">Total Steps (Team)</div>
                 <div class="kpi-value" id="kpi-total">111,801</div>
-                <div class="kpi-sub">Meta: 3,900,000</div>
+                <div class="kpi-sub">Goal: 3,900,000</div>
             </div>
             <div class="kpi-card animate delay-2">
                 <div class="kpi-icon">📊</div>
-                <div class="kpi-label">Média Diária / Time</div>
+                <div class="kpi-label">Daily Average / Team</div>
                 <div class="kpi-value" id="kpi-avg">111,801</div>
-                <div class="kpi-sub">Meta diária: 100,000</div>
+                <div class="kpi-sub">Daily goal: 100,000</div>
             </div>
             <div class="kpi-card animate delay-3">
                 <div class="kpi-icon">🏆</div>
                 <div class="kpi-label">Top Performer</div>
                 <div class="kpi-value" style="font-size: 22px;">Ramiro</div>
-                <div class="kpi-sub">14,842 passos</div>
+                <div class="kpi-sub">14,842 steps</div>
             </div>
             <div class="kpi-card animate delay-4">
                 <div class="kpi-icon">🔥</div>
-                <div class="kpi-label">Record do Dia</div>
+                <div class="kpi-label">Day Record</div>
                 <div class="kpi-value">14,842</div>
                 <div class="kpi-sub">Ramiro — Apr 07</div>
             </div>
             <div class="kpi-card animate delay-5">
                 <div class="kpi-icon">🎯</div>
-                <div class="kpi-label">Progresso</div>
+                <div class="kpi-label">Progress</div>
                 <div class="kpi-value">2.9%</div>
-                <div class="kpi-sub">Dia 1 de 39</div>
+                <div class="kpi-sub">Day 1 of 39</div>
             </div>
         </div>
 
@@ -642,10 +685,10 @@
             <div class="chart-card">
                 <div class="chart-title">
                     <div class="chart-title-icon" style="background: rgba(18,65,145,0.1);">📈</div>
-                    Passos Diários do Time
+                    Team Daily Steps
                 </div>
                 <div class="tab-group">
-                    <button class="tab-btn active" onclick="setDailyChart('total')">Total Time</button>
+                    <button class="tab-btn active" onclick="setDailyChart('total')">Team Total</button>
                     <button class="tab-btn" onclick="setDailyChart('individual')">Individual</button>
                     <button class="tab-btn" onclick="setDailyChart('stacked')">Stacked</button>
                 </div>
@@ -656,7 +699,7 @@
             <div class="chart-card">
                 <div class="chart-title">
                     <div class="chart-title-icon" style="background: rgba(255,61,113,0.1);">🏅</div>
-                    Ranking de Passos
+                    Step Ranking
                 </div>
                 <div class="leaderboard" id="leaderboard"></div>
             </div>
@@ -667,7 +710,7 @@
             <div class="chart-card animate delay-3">
                 <div class="chart-title">
                     <div class="chart-title-icon" style="background: rgba(0,157,224,0.1);">📅</div>
-                    Evolução Semanal
+                    Weekly Trend
                 </div>
                 <div class="chart-container" style="height: 320px;">
                     <canvas id="weeklyChart"></canvas>
@@ -676,7 +719,7 @@
             <div class="chart-card animate delay-4">
                 <div class="chart-title">
                     <div class="chart-title-icon" style="background: rgba(0,196,140,0.1);">🎯</div>
-                    Meta Diária (10,000 passos)
+                    Daily Goal (10,000 steps)
                 </div>
                 <div class="chart-container" style="height: 320px;">
                     <canvas id="goalChart"></canvas>
@@ -688,7 +731,7 @@
         <div class="chart-card animate delay-5" style="margin-bottom: 28px;">
             <div class="chart-title">
                 <div class="chart-title-icon" style="background: rgba(255,169,64,0.1);">🗓️</div>
-                Últimos 7 Dias — Heatmap de Atividade
+                Last 7 Days — Activity Heatmap
             </div>
             <div class="heatmap-grid" id="heatmap"></div>
         </div>
@@ -697,7 +740,7 @@
         <div class="chart-card animate delay-5" style="margin-bottom: 28px;">
             <div class="chart-title">
                 <div class="chart-title-icon" style="background: rgba(18,65,145,0.08);">👤</div>
-                Performance Individual — Média vs Meta
+                Individual Performance — Average vs Goal
             </div>
             <div class="chart-container" style="height: 360px;">
                 <canvas id="individualChart"></canvas>
@@ -705,7 +748,7 @@
         </div>
 
         <div class="footer">
-            Dashboard gerado em 07/04/2026 às 17:09 &nbsp;•&nbsp; Step Tracking Challenge 2026 — Team 8
+            Dashboard generated on 04/07/2026 at 5:09 PM &nbsp;•&nbsp; Step Tracking Challenge 2026 — Team 8
         </div>
     </div>
 
@@ -714,7 +757,7 @@
         const memberData = [{"name": "Juan Carloss Moran", "total": 12238, "daily": [12238, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 12238, "color": "#124191"}, {"name": "Humberto Silva", "total": 9307, "daily": [9307, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 9307, "color": "#009DE0"}, {"name": "Roc\u00edo P\u00e9rez", "total": 8370, "daily": [8370, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 8370, "color": "#FF3D71"}, {"name": "Ruben Salomoni", "total": 12286, "daily": [12286, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 12286, "color": "#00C48C"}, {"name": "Eron Netto", "total": 12640, "daily": [12640, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 12640, "color": "#FFA940"}, {"name": "Lizandro Ortiz Corzo", "total": 10658, "daily": [10658, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 10658, "color": "#7B61FF"}, {"name": "Alexis Rodriguez", "total": 14002, "daily": [14002, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 14002, "color": "#FF6F91"}, {"name": "Cynthia Vellena", "total": 8990, "daily": [8990, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 8990, "color": "#0080C0"}, {"name": "Ramiro Campos", "total": 14842, "daily": [14842, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 14842, "color": "#F7B731"}, {"name": "Jesse Pereira Galvez", "total": 8468, "daily": [8468, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 8468, "color": "#26D07C"}];
         const dateLabels = ["Apr 07", "Apr 08", "Apr 09", "Apr 10", "Apr 11", "Apr 12", "Apr 13", "Apr 14", "Apr 15", "Apr 16", "Apr 17", "Apr 18", "Apr 19", "Apr 20", "Apr 21", "Apr 22", "Apr 23", "Apr 24", "Apr 25", "Apr 26", "Apr 27", "Apr 28", "Apr 29", "Apr 30", "May 01", "May 02", "May 03", "May 04", "May 05", "May 06", "May 07", "May 08", "May 09", "May 10", "May 11", "May 12", "May 13", "May 14", "May 15"];
         const shortLabels = ["07/04", "08/04", "09/04", "10/04", "11/04", "12/04", "13/04", "14/04", "15/04", "16/04", "17/04", "18/04", "19/04", "20/04", "21/04", "22/04", "23/04", "24/04", "25/04", "26/04", "27/04", "28/04", "29/04", "30/04", "01/05", "02/05", "03/05", "04/05", "05/05", "06/05", "07/05", "08/05", "09/05", "10/05", "11/05", "12/05", "13/05", "14/05", "15/05"];
-        const weekLabels = ["Sem 15", "Sem 16", "Sem 17", "Sem 18", "Sem 19", "Sem 20"];
+        const weekLabels = ["Wk 15", "Wk 16", "Wk 17", "Wk 18", "Wk 19", "Wk 20"];
         const weeklyMemberData = {"Juan Carloss Moran": [12238, 0, 0, 0, 0, 0], "Humberto Silva": [9307, 0, 0, 0, 0, 0], "Roc\u00edo P\u00e9rez": [8370, 0, 0, 0, 0, 0], "Ruben Salomoni": [12286, 0, 0, 0, 0, 0], "Eron Netto": [12640, 0, 0, 0, 0, 0], "Lizandro Ortiz Corzo": [10658, 0, 0, 0, 0, 0], "Alexis Rodriguez": [14002, 0, 0, 0, 0, 0], "Cynthia Vellena": [8990, 0, 0, 0, 0, 0], "Ramiro Campos": [14842, 0, 0, 0, 0, 0], "Jesse Pereira Galvez": [8468, 0, 0, 0, 0, 0]};
         const DAILY_GOAL = 10000;
         const daysElapsed = 1;
@@ -748,7 +791,7 @@
                     data: {
                         labels: activeLabels,
                         datasets: [{
-                            label: 'Total Time',
+                            label: 'Team Total',
                             data: totals,
                             borderColor: '#124191',
                             backgroundColor: gradient,
@@ -761,7 +804,7 @@
                             borderWidth: 3,
                         },
                         {
-                            label: 'Meta Diária',
+                            label: 'Daily Goal',
                             data: Array(daysElapsed).fill(DAILY_GOAL * memberData.length),
                             borderColor: 'rgba(255,61,113,0.6)',
                             borderDash: [8, 4],
@@ -851,7 +894,7 @@
                 data: {
                     labels: shortLabels.slice(0, daysElapsed),
                     datasets: [{
-                        label: 'Total Time',
+                        label: 'Team Total',
                         data: totals,
                         borderColor: '#124191',
                         backgroundColor: gradient,
@@ -864,7 +907,7 @@
                         borderWidth: 3,
                     },
                     {
-                        label: 'Meta Diária',
+                        label: 'Daily Goal',
                         data: Array(daysElapsed).fill(DAILY_GOAL * memberData.length),
                         borderColor: 'rgba(255,61,113,0.6)',
                         borderDash: [8, 4],
@@ -901,7 +944,7 @@
                         <div class="leader-rank ${rankCls}">${i+1}</div>
                         <div class="leader-info">
                             <div class="leader-name">${m.name}</div>
-                            <div class="leader-avg">⌀ ${m.avg.toLocaleString()} / dia</div>
+                            <div class="leader-avg">⌀ ${m.avg.toLocaleString()} / day</div>
                         </div>
                         <div class="leader-bar-wrapper">
                             <div class="leader-bar" style="width: ${pct}%; background: ${m.color};"></div>
@@ -950,7 +993,7 @@
                     labels: names,
                     datasets: [
                         {
-                            label: 'Média Diária',
+                            label: 'Daily Average',
                             data: avgs,
                             borderColor: '#124191',
                             backgroundColor: 'rgba(18,65,145,0.12)',
@@ -959,7 +1002,7 @@
                             pointRadius: 4,
                         },
                         {
-                            label: 'Meta',
+                            label: 'Goal',
                             data: goals,
                             borderColor: 'rgba(255,61,113,0.6)',
                             backgroundColor: 'rgba(255,61,113,0.05)',
@@ -1053,7 +1096,7 @@
                     labels: names,
                     datasets: [
                         {
-                            label: 'Média Diária',
+                            label: 'Daily Average',
                             data: avgs,
                             backgroundColor: bgColors,
                             borderColor: borderColors,
@@ -1100,7 +1143,7 @@
                         ctx.stroke();
                         ctx.fillStyle = '#E0245E';
                         ctx.font = '11px Inter';
-                        ctx.fillText('Meta', goalX + 4, yScale.top + 12);
+                        ctx.fillText('Goal', goalX + 4, yScale.top + 12);
                         ctx.restore();
                     }
                 }]

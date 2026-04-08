@@ -95,7 +95,7 @@ def generate_html(dates, members, is_demo):
     week_data = {}
     for i, d in enumerate(dates):
         dt = datetime.strptime(d, '%Y-%m-%d')
-        week_key = f"Sem {dt.isocalendar()[1]}"
+        week_key = f"Wk {dt.isocalendar()[1]}"
         if week_key not in week_data:
             week_data[week_key] = {}
         for m in members:
@@ -161,11 +161,11 @@ def generate_html(dates, members, is_demo):
         demo_banner = """
         <div class="demo-banner">
             <span class="demo-icon">🎯</span>
-            <span>MODO DEMONSTRAÇÃO — Os dados abaixo são simulados. Preencha a planilha Excel e execute novamente para ver dados reais.</span>
+            <span>DEMO MODE — The data below is simulated. Fill in the Excel spreadsheet and run again to see real data.</span>
         </div>"""
 
     html = f"""<!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en-US">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -672,8 +672,51 @@ def generate_html(dates, members, is_demo):
 
         @media (max-width: 768px) {{
             .kpi-grid {{ grid-template-columns: repeat(2, 1fr); }}
-            .dashboard {{ padding: 16px; }}
-            .header {{ flex-direction: column; gap: 16px; text-align: center; }}
+            .dashboard {{ padding: 12px; }}
+            .header {{
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+                padding: 18px 16px;
+            }}
+            .header-left h1 {{ font-size: 20px; }}
+            .header-left p {{ font-size: 12px; }}
+            .header-right {{ flex-wrap: wrap; justify-content: center; gap: 8px; }}
+            .header-badge {{ font-size: 12px; padding: 6px 12px; }}
+            .chart-card {{ padding: 16px; }}
+            .chart-title {{ font-size: 14px; }}
+            .kpi-card {{ padding: 16px; }}
+            .kpi-value {{ font-size: 22px; }}
+            .kpi-label {{ font-size: 11px; }}
+            .demo-banner {{ padding: 12px 16px; font-size: 12px; }}
+            .tab-group {{ flex-wrap: wrap; }}
+            .tab-btn {{ padding: 8px 14px; font-size: 11px; }}
+            .heatmap-grid {{
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                min-width: 0;
+            }}
+            .leader-row {{ padding: 10px 12px; gap: 10px; }}
+            .leader-bar-wrapper {{ width: 50px; }}
+            .leader-steps {{ font-size: 12px; }}
+            .leader-name {{ font-size: 12px; }}
+            .footer {{ font-size: 11px; }}
+        }}
+
+        @media (max-width: 480px) {{
+            .kpi-grid {{ grid-template-columns: 1fr; gap: 12px; }}
+            .dashboard {{ padding: 8px; }}
+            .header {{ padding: 14px 12px; margin-bottom: 16px; }}
+            .header-left h1 {{ font-size: 18px; }}
+            .kpi-value {{ font-size: 20px; }}
+            .chart-container {{ min-height: 220px; }}
+            .progress-container {{ flex-wrap: wrap; gap: 20px; }}
+            .heatmap-grid {{
+                grid-template-columns: 80px repeat(7, minmax(50px, 1fr));
+            }}
+            .heatmap-name {{ font-size: 10px; }}
+            .heatmap-cell {{ font-size: 9px; padding: 6px 1px; }}
+            .leader-bar-wrapper {{ display: none; }}
         }}
 
         /* Animations */
@@ -750,15 +793,15 @@ def generate_html(dates, members, is_demo):
         <div class="header animate">
             <div class="header-left">
                 <h1>🏃 Nokia SEAL TEAM 8</h1>
-                <p>Step Tracking Challenge — Abril / Maio 2026 &nbsp;•&nbsp; {days_elapsed} de {days_total} dias</p>
+                <p>Step Tracking Challenge — April / May 2026 &nbsp;•&nbsp; Day {days_elapsed} of {days_total}</p>
             </div>
             <div class="header-right">
                 <div class="header-badge">
                     <div class="pulse-dot"></div>
-                    <span>{days_total - days_elapsed} dias restantes</span>
+                    <span>{days_total - days_elapsed} days remaining</span>
                 </div>
                 <div class="header-badge" style="background: rgba(0,157,224,0.08); border-color: rgba(0,157,224,0.2);">
-                    <span style="color: #009DE0;">👥 {len(members)} membros</span>
+                    <span style="color: #009DE0;">👥 {len(members)} members</span>
                 </div>
             </div>
         </div>
@@ -769,33 +812,33 @@ def generate_html(dates, members, is_demo):
         <div class="kpi-grid">
             <div class="kpi-card animate delay-1">
                 <div class="kpi-icon">👣</div>
-                <div class="kpi-label">Total Passos (Time)</div>
+                <div class="kpi-label">Total Steps (Team)</div>
                 <div class="kpi-value" id="kpi-total">{total_team:,.0f}</div>
-                <div class="kpi-sub">Meta: {DAILY_GOAL * len(members) * days_total:,.0f}</div>
+                <div class="kpi-sub">Goal: {DAILY_GOAL * len(members) * days_total:,.0f}</div>
             </div>
             <div class="kpi-card animate delay-2">
                 <div class="kpi-icon">📊</div>
-                <div class="kpi-label">Média Diária / Time</div>
+                <div class="kpi-label">Daily Average / Team</div>
                 <div class="kpi-value" id="kpi-avg">{avg_per_day_team:,.0f}</div>
-                <div class="kpi-sub">Meta diária: {DAILY_GOAL * len(members):,.0f}</div>
+                <div class="kpi-sub">Daily goal: {DAILY_GOAL * len(members):,.0f}</div>
             </div>
             <div class="kpi-card animate delay-3">
                 <div class="kpi-icon">🏆</div>
                 <div class="kpi-label">Top Performer</div>
                 <div class="kpi-value" style="font-size: 22px;">{top_performer['name'].split()[0] if top_performer else '-'}</div>
-                <div class="kpi-sub">{top_performer['total']:,.0f} passos</div>
+                <div class="kpi-sub">{top_performer['total']:,.0f} steps</div>
             </div>
             <div class="kpi-card animate delay-4">
                 <div class="kpi-icon">🔥</div>
-                <div class="kpi-label">Record do Dia</div>
+                <div class="kpi-label">Day Record</div>
                 <div class="kpi-value">{best_day_val:,.0f}</div>
                 <div class="kpi-sub">{best_day_name} — {best_day_date}</div>
             </div>
             <div class="kpi-card animate delay-5">
                 <div class="kpi-icon">🎯</div>
-                <div class="kpi-label">Progresso</div>
+                <div class="kpi-label">Progress</div>
                 <div class="kpi-value">{(total_team / max(DAILY_GOAL * len(members) * days_total, 1) * 100):.1f}%</div>
-                <div class="kpi-sub">Dia {days_elapsed} de {days_total}</div>
+                <div class="kpi-sub">Day {days_elapsed} of {days_total}</div>
             </div>
         </div>
 
@@ -804,10 +847,10 @@ def generate_html(dates, members, is_demo):
             <div class="chart-card">
                 <div class="chart-title">
                     <div class="chart-title-icon" style="background: rgba(18,65,145,0.1);">📈</div>
-                    Passos Diários do Time
+                    Team Daily Steps
                 </div>
                 <div class="tab-group">
-                    <button class="tab-btn active" onclick="setDailyChart('total')">Total Time</button>
+                    <button class="tab-btn active" onclick="setDailyChart('total')">Team Total</button>
                     <button class="tab-btn" onclick="setDailyChart('individual')">Individual</button>
                     <button class="tab-btn" onclick="setDailyChart('stacked')">Stacked</button>
                 </div>
@@ -818,7 +861,7 @@ def generate_html(dates, members, is_demo):
             <div class="chart-card">
                 <div class="chart-title">
                     <div class="chart-title-icon" style="background: rgba(255,61,113,0.1);">🏅</div>
-                    Ranking de Passos
+                    Step Ranking
                 </div>
                 <div class="leaderboard" id="leaderboard"></div>
             </div>
@@ -829,7 +872,7 @@ def generate_html(dates, members, is_demo):
             <div class="chart-card animate delay-3">
                 <div class="chart-title">
                     <div class="chart-title-icon" style="background: rgba(0,157,224,0.1);">📅</div>
-                    Evolução Semanal
+                    Weekly Trend
                 </div>
                 <div class="chart-container" style="height: 320px;">
                     <canvas id="weeklyChart"></canvas>
@@ -838,7 +881,7 @@ def generate_html(dates, members, is_demo):
             <div class="chart-card animate delay-4">
                 <div class="chart-title">
                     <div class="chart-title-icon" style="background: rgba(0,196,140,0.1);">🎯</div>
-                    Meta Diária ({DAILY_GOAL:,.0f} passos)
+                    Daily Goal ({DAILY_GOAL:,.0f} steps)
                 </div>
                 <div class="chart-container" style="height: 320px;">
                     <canvas id="goalChart"></canvas>
@@ -850,7 +893,7 @@ def generate_html(dates, members, is_demo):
         <div class="chart-card animate delay-5" style="margin-bottom: 28px;">
             <div class="chart-title">
                 <div class="chart-title-icon" style="background: rgba(255,169,64,0.1);">🗓️</div>
-                Últimos 7 Dias — Heatmap de Atividade
+                Last 7 Days — Activity Heatmap
             </div>
             <div class="heatmap-grid" id="heatmap"></div>
         </div>
@@ -859,7 +902,7 @@ def generate_html(dates, members, is_demo):
         <div class="chart-card animate delay-5" style="margin-bottom: 28px;">
             <div class="chart-title">
                 <div class="chart-title-icon" style="background: rgba(18,65,145,0.08);">👤</div>
-                Performance Individual — Média vs Meta
+                Individual Performance — Average vs Goal
             </div>
             <div class="chart-container" style="height: 360px;">
                 <canvas id="individualChart"></canvas>
@@ -867,7 +910,7 @@ def generate_html(dates, members, is_demo):
         </div>
 
         <div class="footer">
-            Dashboard gerado em {datetime.now().strftime('%d/%m/%Y às %H:%M')} &nbsp;•&nbsp; Step Tracking Challenge 2026 — Team 8
+            Dashboard generated on {datetime.now().strftime('%m/%d/%Y at %I:%M %p')} &nbsp;•&nbsp; Step Tracking Challenge 2026 — Team 8
         </div>
     </div>
 
@@ -910,7 +953,7 @@ def generate_html(dates, members, is_demo):
                     data: {{
                         labels: activeLabels,
                         datasets: [{{
-                            label: 'Total Time',
+                            label: 'Team Total',
                             data: totals,
                             borderColor: '#124191',
                             backgroundColor: gradient,
@@ -923,7 +966,7 @@ def generate_html(dates, members, is_demo):
                             borderWidth: 3,
                         }},
                         {{
-                            label: 'Meta Diária',
+                            label: 'Daily Goal',
                             data: Array(daysElapsed).fill(DAILY_GOAL * memberData.length),
                             borderColor: 'rgba(255,61,113,0.6)',
                             borderDash: [8, 4],
@@ -1013,7 +1056,7 @@ def generate_html(dates, members, is_demo):
                 data: {{
                     labels: shortLabels.slice(0, daysElapsed),
                     datasets: [{{
-                        label: 'Total Time',
+                        label: 'Team Total',
                         data: totals,
                         borderColor: '#124191',
                         backgroundColor: gradient,
@@ -1026,7 +1069,7 @@ def generate_html(dates, members, is_demo):
                         borderWidth: 3,
                     }},
                     {{
-                        label: 'Meta Diária',
+                        label: 'Daily Goal',
                         data: Array(daysElapsed).fill(DAILY_GOAL * memberData.length),
                         borderColor: 'rgba(255,61,113,0.6)',
                         borderDash: [8, 4],
@@ -1063,7 +1106,7 @@ def generate_html(dates, members, is_demo):
                         <div class="leader-rank ${{rankCls}}">${{i+1}}</div>
                         <div class="leader-info">
                             <div class="leader-name">${{m.name}}</div>
-                            <div class="leader-avg">⌀ ${{m.avg.toLocaleString()}} / dia</div>
+                            <div class="leader-avg">⌀ ${{m.avg.toLocaleString()}} / day</div>
                         </div>
                         <div class="leader-bar-wrapper">
                             <div class="leader-bar" style="width: ${{pct}}%; background: ${{m.color}};"></div>
@@ -1112,7 +1155,7 @@ def generate_html(dates, members, is_demo):
                     labels: names,
                     datasets: [
                         {{
-                            label: 'Média Diária',
+                            label: 'Daily Average',
                             data: avgs,
                             borderColor: '#124191',
                             backgroundColor: 'rgba(18,65,145,0.12)',
@@ -1121,7 +1164,7 @@ def generate_html(dates, members, is_demo):
                             pointRadius: 4,
                         }},
                         {{
-                            label: 'Meta',
+                            label: 'Goal',
                             data: goals,
                             borderColor: 'rgba(255,61,113,0.6)',
                             backgroundColor: 'rgba(255,61,113,0.05)',
@@ -1215,7 +1258,7 @@ def generate_html(dates, members, is_demo):
                     labels: names,
                     datasets: [
                         {{
-                            label: 'Média Diária',
+                            label: 'Daily Average',
                             data: avgs,
                             backgroundColor: bgColors,
                             borderColor: borderColors,
@@ -1262,7 +1305,7 @@ def generate_html(dates, members, is_demo):
                         ctx.stroke();
                         ctx.fillStyle = '#E0245E';
                         ctx.font = '11px Inter';
-                        ctx.fillText('Meta', goalX + 4, yScale.top + 12);
+                        ctx.fillText('Goal', goalX + 4, yScale.top + 12);
                         ctx.restore();
                     }}
                 }}]
@@ -1296,24 +1339,24 @@ def generate_html(dates, members, is_demo):
 
 
 def main():
-    print("📖 Lendo dados do Excel...")
+    print("📖 Reading data from Excel...")
     dates, members, all_zero = read_excel_data()
 
     if all_zero:
-        print("⚠️  Dados vazios. Gerando com dados de demonstração...")
+        print("⚠️  Empty data. Generating with demo data...")
         members = generate_demo_data(dates, members)
         is_demo = True
     else:
         is_demo = False
 
-    print("🎨 Gerando dashboard...")
+    print("🎨 Generating dashboard...")
     html = generate_html(dates, members, is_demo)
 
     with open(OUTPUT_PATH, 'w', encoding='utf-8') as f:
         f.write(html)
 
-    print(f"✅ Dashboard salvo em: {OUTPUT_PATH}")
-    print("🌐 Abrindo no navegador...")
+    print(f"✅ Dashboard saved to: {OUTPUT_PATH}")
+    print("🌐 Opening in browser...")
     webbrowser.open(f'file:///{OUTPUT_PATH.replace(os.sep, "/")}')
 
 
