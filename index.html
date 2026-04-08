@@ -826,7 +826,7 @@
         </div>
 
         <div class="footer">
-            Dashboard generated on 04/08/2026 at 19:48 &nbsp;•&nbsp; Step Tracking Challenge 2026 — Team 8
+            Dashboard generated on 04/08/2026 at 19:51 &nbsp;•&nbsp; Step Tracking Challenge 2026 — Team 8
         </div>
     </div>
 
@@ -1284,7 +1284,7 @@
             try {
                 const resp = await fetch(
                     'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + FILE_PATH + '?ref=' + BRANCH,
-                    { headers: { 'Authorization': 'token ' + token } }
+                    { headers: { 'Authorization': 'Bearer ' + token } }
                 );
                 if (resp.ok) {
                     const data = await resp.json();
@@ -1311,15 +1311,15 @@
             try {
                 // Read file as base64
                 const base64 = await new Promise((resolve, reject) => {
-                    const r = new FileReader();
-                    r.onload = () => {
-                        const bytes = new Uint8Array(r.result);
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        const bytes = new Uint8Array(reader.result);
                         let binary = '';
                         for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
                         resolve(btoa(binary));
                     };
-                    r.onerror = reject;
-                    r.readAsArrayBuffer(file);
+                    reader.onerror = reject;
+                    reader.readAsArrayBuffer(file);
                 });
 
                 // Get current file SHA (required for updating an existing file)
@@ -1337,7 +1337,7 @@
                     {
                         method: 'PUT',
                         headers: {
-                            'Authorization': 'token ' + token,
+                            'Authorization': 'Bearer ' + token,
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(body)
@@ -1368,7 +1368,7 @@
             if (!file) return;
 
             // Upload to GitHub repository
-            uploadToGitHub(file);
+            await uploadToGitHub(file);
 
             // Also read and update local dashboard immediately
             const reader = new FileReader();

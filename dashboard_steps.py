@@ -1480,7 +1480,7 @@ def generate_html(dates, members, is_demo):
             try {{
                 const resp = await fetch(
                     'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + FILE_PATH + '?ref=' + BRANCH,
-                    {{ headers: {{ 'Authorization': 'token ' + token }} }}
+                    {{ headers: {{ 'Authorization': 'Bearer ' + token }} }}
                 );
                 if (resp.ok) {{
                     const data = await resp.json();
@@ -1507,15 +1507,15 @@ def generate_html(dates, members, is_demo):
             try {{
                 // Read file as base64
                 const base64 = await new Promise((resolve, reject) => {{
-                    const r = new FileReader();
-                    r.onload = () => {{
-                        const bytes = new Uint8Array(r.result);
+                    const reader = new FileReader();
+                    reader.onload = () => {{
+                        const bytes = new Uint8Array(reader.result);
                         let binary = '';
                         for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
                         resolve(btoa(binary));
                     }};
-                    r.onerror = reject;
-                    r.readAsArrayBuffer(file);
+                    reader.onerror = reject;
+                    reader.readAsArrayBuffer(file);
                 }});
 
                 // Get current file SHA (required for updating an existing file)
@@ -1533,7 +1533,7 @@ def generate_html(dates, members, is_demo):
                     {{
                         method: 'PUT',
                         headers: {{
-                            'Authorization': 'token ' + token,
+                            'Authorization': 'Bearer ' + token,
                             'Content-Type': 'application/json'
                         }},
                         body: JSON.stringify(body)
@@ -1564,7 +1564,7 @@ def generate_html(dates, members, is_demo):
             if (!file) return;
 
             // Upload to GitHub repository
-            uploadToGitHub(file);
+            await uploadToGitHub(file);
 
             // Also read and update local dashboard immediately
             const reader = new FileReader();
