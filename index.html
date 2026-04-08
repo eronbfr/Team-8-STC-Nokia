@@ -695,56 +695,32 @@
             color: #fff;
         }
 
-        /* GitHub token modal */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 300;
-            justify-content: center;
+        /* Save to repo button */
+        .save-repo-btn {
+            display: inline-flex;
             align-items: center;
-        }
-        .modal-overlay.show { display: flex; }
-        .modal-box {
-            background: #fff;
-            border-radius: 16px;
-            padding: 32px;
-            max-width: 460px;
-            width: 90%;
-            box-shadow: 0 8px 40px rgba(0,0,0,0.2);
-        }
-        .modal-box h3 { margin-bottom: 12px; font-size: 18px; }
-        .modal-box p { font-size: 13px; color: #4A5568; margin-bottom: 16px; line-height: 1.5; }
-        .modal-box input[type="password"] {
-            width: 100%; padding: 10px 14px; border: 1px solid #E2E8F0;
-            border-radius: 10px; font-size: 14px; margin-bottom: 16px;
-            font-family: 'JetBrains Mono', monospace;
-        }
-        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
-        .modal-actions button {
-            padding: 8px 20px; border: none; border-radius: 10px;
-            font-size: 13px; font-weight: 600; cursor: pointer;
+            gap: 6px;
+            padding: 8px 18px;
+            background: linear-gradient(135deg, #00C48C 0%, #009DE0 100%);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
             font-family: 'Inter', sans-serif;
+            text-decoration: none;
+            transition: transform 0.15s, box-shadow 0.15s;
         }
-        .modal-actions .btn-primary { background: var(--gradient-1); color: #fff; }
-        .modal-actions .btn-cancel { background: #E2E8F0; color: #4A5568; }
+        .save-repo-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,157,224,0.3);
+        }
+        .save-repo-btn.hidden { display: none; }
     </style>
 </head>
 <body>
     <div id="uploadToast" class="upload-toast"></div>
-    <!-- GitHub token modal -->
-    <div id="tokenModal" class="modal-overlay">
-        <div class="modal-box">
-            <h3>🔑 GitHub Token Required</h3>
-            <p>To save the spreadsheet to the repository, enter a GitHub Personal Access Token with <strong>repo contents write</strong> permission. The token is stored only in your browser's local storage.</p>
-            <input type="password" id="ghTokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-            <div class="modal-actions">
-                <button class="btn-cancel" onclick="closeTokenModal()">Cancel</button>
-                <button class="btn-primary" onclick="submitToken()">Save &amp; Upload</button>
-            </div>
-        </div>
-    </div>
     <div class="dashboard">
         <!-- Header -->
         <div class="header animate">
@@ -757,12 +733,15 @@
                     📤 Upload
                     <input type="file" id="xlsxUpload" accept=".xlsx,.xls" style="display:none;" onchange="handleUpload(this)">
                 </label>
+                <a id="saveRepoBtn" class="save-repo-btn hidden" href="https://github.com/eronbfr/Team-8-STC-Nokia/upload/main" target="_blank" rel="noopener" title="Save the spreadsheet to the repository via GitHub">
+                    💾 Save to Repo
+                </a>
                 <div class="header-badge">
                     <div class="pulse-dot"></div>
                     <span>37 days left</span>
                 </div>
                 <div class="header-badge" style="background: rgba(0,157,224,0.08); border-color: rgba(0,157,224,0.2);">
-                    <span style="color: #009DE0;">👥 10 members</span>
+                    <span style="color: #009DE0;">👥 2 members</span>
                 </div>
             </div>
         </div>
@@ -774,31 +753,31 @@
             <div class="kpi-card animate delay-1">
                 <div class="kpi-icon">👣</div>
                 <div class="kpi-label">Total Steps (Team)</div>
-                <div class="kpi-value" id="kpi-total">7,470</div>
-                <div class="kpi-sub">Goal: 3,900,000</div>
+                <div class="kpi-value" id="kpi-total">5,876</div>
+                <div class="kpi-sub">Goal: 780,000</div>
             </div>
             <div class="kpi-card animate delay-2">
                 <div class="kpi-icon">📊</div>
                 <div class="kpi-label">Daily Avg / Team</div>
-                <div class="kpi-value" id="kpi-avg">3,735</div>
-                <div class="kpi-sub">Daily goal: 100,000</div>
+                <div class="kpi-value" id="kpi-avg">2,938</div>
+                <div class="kpi-sub">Daily goal: 20,000</div>
             </div>
             <div class="kpi-card animate delay-3">
                 <div class="kpi-icon">🏆</div>
                 <div class="kpi-label">Top Performer</div>
-                <div class="kpi-value" style="font-size: 22px;">Eron</div>
-                <div class="kpi-sub">7,470 steps</div>
+                <div class="kpi-value" style="font-size: 22px;">Humberto</div>
+                <div class="kpi-sub">5,876 steps</div>
             </div>
             <div class="kpi-card animate delay-4">
                 <div class="kpi-icon">🔥</div>
                 <div class="kpi-label">Daily Record</div>
-                <div class="kpi-value">7,470</div>
-                <div class="kpi-sub">Eron — Apr 07</div>
+                <div class="kpi-value">5,876</div>
+                <div class="kpi-sub">Humberto — Apr 07</div>
             </div>
             <div class="kpi-card animate delay-5">
                 <div class="kpi-icon">🎯</div>
                 <div class="kpi-label">Progress</div>
-                <div class="kpi-value">0.2%</div>
+                <div class="kpi-value">0.8%</div>
                 <div class="kpi-sub">Day 2 of 39</div>
             </div>
         </div>
@@ -871,17 +850,17 @@
         </div>
 
         <div class="footer">
-            Dashboard generated on 04/08/2026 at 13:52 &nbsp;•&nbsp; Step Tracking Challenge 2026 — Team 8
+            Dashboard generated on 04/08/2026 at 16:36 &nbsp;•&nbsp; Step Tracking Challenge 2026 — Team 8
         </div>
     </div>
 
     <script>
         // Data
-        const memberData = [{"name": "Juan Carloss Moran", "total": 0, "daily": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 0, "color": "#124191"}, {"name": "Humberto Silva", "total": 0, "daily": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 0, "color": "#009DE0"}, {"name": "Roc\u00edo P\u00e9rez", "total": 0, "daily": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 0, "color": "#FF3D71"}, {"name": "Ruben Salomoni", "total": 0, "daily": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 0, "color": "#00C48C"}, {"name": "Eron Netto", "total": 7470, "daily": [7470, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 3735, "color": "#FFA940"}, {"name": "Lizandro Ortiz Corzo", "total": 0, "daily": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 0, "color": "#7B61FF"}, {"name": "Alexis Rodriguez", "total": 0, "daily": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 0, "color": "#FF6F91"}, {"name": "Cynthia Vellena", "total": 0, "daily": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 0, "color": "#0080C0"}, {"name": "Ramiro Campos", "total": 0, "daily": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 0, "color": "#F7B731"}, {"name": "Jesse Pereira Galvez", "total": 0, "daily": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 0, "color": "#26D07C"}];
+        const memberData = [{"name": "Juan Carloss Moran", "total": 0, "daily": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 0, "color": "#124191"}, {"name": "Humberto Silva", "total": 5876, "daily": [5876, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 2938, "color": "#009DE0"}];
         const dateLabels = ["Apr 07", "Apr 08", "Apr 09", "Apr 10", "Apr 11", "Apr 12", "Apr 13", "Apr 14", "Apr 15", "Apr 16", "Apr 17", "Apr 18", "Apr 19", "Apr 20", "Apr 21", "Apr 22", "Apr 23", "Apr 24", "Apr 25", "Apr 26", "Apr 27", "Apr 28", "Apr 29", "Apr 30", "May 01", "May 02", "May 03", "May 04", "May 05", "May 06", "May 07", "May 08", "May 09", "May 10", "May 11", "May 12", "May 13", "May 14", "May 15"];
         const shortLabels = ["07/04", "08/04", "09/04", "10/04", "11/04", "12/04", "13/04", "14/04", "15/04", "16/04", "17/04", "18/04", "19/04", "20/04", "21/04", "22/04", "23/04", "24/04", "25/04", "26/04", "27/04", "28/04", "29/04", "30/04", "01/05", "02/05", "03/05", "04/05", "05/05", "06/05", "07/05", "08/05", "09/05", "10/05", "11/05", "12/05", "13/05", "14/05", "15/05"];
         const weekLabels = ["Week 15", "Week 16", "Week 17", "Week 18", "Week 19", "Week 20"];
-        const weeklyMemberData = {"Juan Carloss Moran": [0, 0, 0, 0, 0, 0], "Humberto Silva": [0, 0, 0, 0, 0, 0], "Roc\u00edo P\u00e9rez": [0, 0, 0, 0, 0, 0], "Ruben Salomoni": [0, 0, 0, 0, 0, 0], "Eron Netto": [7470, 0, 0, 0, 0, 0], "Lizandro Ortiz Corzo": [0, 0, 0, 0, 0, 0], "Alexis Rodriguez": [0, 0, 0, 0, 0, 0], "Cynthia Vellena": [0, 0, 0, 0, 0, 0], "Ramiro Campos": [0, 0, 0, 0, 0, 0], "Jesse Pereira Galvez": [0, 0, 0, 0, 0, 0]};
+        const weeklyMemberData = {"Juan Carloss Moran": [0, 0, 0, 0, 0, 0], "Humberto Silva": [5876, 0, 0, 0, 0, 0]};
         const DAILY_GOAL = 10000;
         const daysElapsed = 2;
 
@@ -1290,97 +1269,16 @@
             requestAnimationFrame(update);
         }
 
-        animateValue('kpi-total', 0, 7470, 1500);
-        animateValue('kpi-avg', 0, 3735, 1200);
+        animateValue('kpi-total', 0, 5876, 1500);
+        animateValue('kpi-avg', 0, 2938, 1200);
 
         // ===== UPLOAD HANDLER =====
-        const GH_OWNER = 'eronbfr';
-        const GH_REPO = 'Team-8-STC-Nokia';
-        const GH_FILE_PATH = 'step-tracking_Team8.xlsx';
-        const GH_BRANCH = 'main';
-        let _pendingFileArrayBuffer = null;
 
         function showToast(msg, type) {
             const t = document.getElementById('uploadToast');
             t.textContent = msg;
             t.className = 'upload-toast ' + type + ' show';
             setTimeout(() => { t.classList.remove('show'); }, 5000);
-        }
-
-        function getGhToken() { return localStorage.getItem('gh_token'); }
-        function setGhToken(tok) { localStorage.setItem('gh_token', tok); }
-
-        function openTokenModal() { document.getElementById('tokenModal').classList.add('show'); }
-        function closeTokenModal() { document.getElementById('tokenModal').classList.remove('show'); }
-        function submitToken() {
-            const tok = document.getElementById('ghTokenInput').value.trim();
-            if (!tok) return;
-            setGhToken(tok);
-            closeTokenModal();
-            if (_pendingFileArrayBuffer) {
-                uploadToGitHub(_pendingFileArrayBuffer);
-                _pendingFileArrayBuffer = null;
-            }
-        }
-
-        function arrayBufferToBase64(buffer) {
-            let binary = '';
-            const bytes = new Uint8Array(buffer);
-            for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
-            return btoa(binary);
-        }
-
-        async function uploadToGitHub(arrayBuffer) {
-            const token = getGhToken();
-            if (!token) {
-                _pendingFileArrayBuffer = arrayBuffer;
-                openTokenModal();
-                return;
-            }
-            showToast('⏳ Uploading spreadsheet to repository...', 'info');
-            try {
-                const apiUrl = 'https://api.github.com/repos/' + GH_OWNER + '/' + GH_REPO + '/contents/' + GH_FILE_PATH;
-                // Get current file SHA
-                const getResp = await fetch(apiUrl + '?ref=' + GH_BRANCH, {
-                    headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github.v3+json' }
-                });
-                let sha = null;
-                if (getResp.ok) {
-                    const meta = await getResp.json();
-                    sha = meta.sha;
-                }
-                // PUT the new file
-                const body = {
-                    message: 'Update spreadsheet via dashboard upload',
-                    content: arrayBufferToBase64(arrayBuffer),
-                    branch: GH_BRANCH
-                };
-                if (sha) body.sha = sha;
-                const putResp = await fetch(apiUrl, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': 'Bearer ' + token,
-                        'Accept': 'application/vnd.github.v3+json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(body)
-                });
-                if (putResp.ok) {
-                    showToast('✅ Spreadsheet saved to repository! The dashboard will update automatically.', 'success');
-                } else {
-                    const err = await putResp.json();
-                    if (putResp.status === 401 || putResp.status === 403) {
-                        localStorage.removeItem('gh_token');
-                        showToast('❌ Invalid or expired token. Please try again.', 'error');
-                        _pendingFileArrayBuffer = arrayBuffer;
-                        openTokenModal();
-                    } else {
-                        showToast('❌ GitHub error: ' + (err.message || putResp.status), 'error');
-                    }
-                }
-            } catch (err) {
-                showToast('❌ Network error: ' + err.message, 'error');
-            }
         }
 
         function handleUpload(input) {
@@ -1416,10 +1314,18 @@
                     for (let r = 2; r < Math.min(12, data.length); r++) {
                         const row = data[r];
                         if (!row || !row[1]) continue;
+
+                        // Find matching existing member for merge
+                        const existingMember = memberData.find(m => m.name === row[1]);
                         const daily = [];
                         let total = 0;
                         for (let c = 4; c < 4 + numDays; c++) {
-                            const v = typeof row[c] === 'number' ? row[c] : 0;
+                            let v = typeof row[c] === 'number' ? row[c] : 0;
+                            // Merge: if new value is 0 but existing has data, keep existing
+                            const idx = c - 4;
+                            if (v === 0 && existingMember && idx < existingMember.daily.length && existingMember.daily[idx]) {
+                                v = existingMember.daily[idx];
+                            }
                             daily.push(v);
                             total += v;
                         }
@@ -1443,10 +1349,10 @@
 
                     // Rebuild all charts
                     rebuildAll(elapsed, numDays);
-                    showToast('✅ Spreadsheet loaded! Saving to repository...', 'success');
+                    showToast('✅ Spreadsheet loaded! Click "Save to Repo" to update the repository.', 'success');
 
-                    // Upload to GitHub repository (overwrites existing file)
-                    uploadToGitHub(arrayBuffer);
+                    // Show the "Save to Repo" button
+                    document.getElementById('saveRepoBtn').classList.remove('hidden');
                 } catch (err) {
                     showToast('❌ Error reading file: ' + err.message, 'error');
                     console.error(err);

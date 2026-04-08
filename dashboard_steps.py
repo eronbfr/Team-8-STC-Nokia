@@ -45,7 +45,13 @@ def read_excel_data():
         return dates, members, True
 
     wb = openpyxl.load_workbook(EXCEL_PATH, data_only=True)
-    ws = wb['Team 8']
+    # Try known sheet names, fall back to first sheet
+    for _sheet_name in ('Team 8', 'Team X'):
+        if _sheet_name in wb.sheetnames:
+            ws = wb[_sheet_name]
+            break
+    else:
+        ws = wb[wb.sheetnames[0]]
 
     # Read dates from row 2, starting at column E (5)
     dates = []
