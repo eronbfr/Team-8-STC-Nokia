@@ -3,10 +3,10 @@ Merge spreadsheet data: combines the existing (old) xlsx from git history
 with the newly uploaded xlsx so that no data is lost.
 
 Logic:
-- For each member/date cell, if both files have a non-zero value, the new
-  value takes precedence.
-- If only the old file has a value (and the new cell is 0 or empty), the
-  old value is preserved.
+- The OLD workbook (from git history) is used as the base, preserving the
+  full structure (all members, all dates, formatting).
+- For each member present in the new upload, only cells with a non-zero
+  value overwrite the corresponding cell in the old workbook.
 - Members and dates are matched by name/date value.
 
 Run by the CI workflow before dashboard_steps.py.
@@ -86,7 +86,16 @@ def _read_data(wb):
 
 
 def merge():
-    """Merge old and new xlsx data, writing the result back to the xlsx."""
+    """Merge new upload into the existing spreadsheet, preserving its structure.
+
+    The OLD workbook (from git history) is used as the base so that the full
+    structure (all members, dates, formatting) is always preserved.  Only cells
+    where the newly-uploaded file contains a non-zero value are overwritten.
+
+    Example: the spreadsheet has 10 members.  Humberto uploads a file that
+    only contains his own row → only Humberto's cells are updated; every
+    other member's data remains untouched.
+    """
     if not os.path.exists(XLSX_PATH):
         print("merge_xlsx: No xlsx file found, nothing to merge.")
         return
@@ -96,61 +105,72 @@ def merge():
         print("merge_xlsx: No previous version in git history, skipping merge.")
         return
 
-    # Read old workbook
+    # Load OLD workbook as the BASE (preserves structure, all members, formatting)
     try:
-        old_wb = openpyxl.load_workbook(io.BytesIO(old_bytes), data_only=True)
+        old_wb = openpyxl.load_workbook(io.BytesIO(old_bytes))
     except Exception as exc:
         print(f"merge_xlsx: Could not read old xlsx: {exc}")
         return
 
-    # Read new (current) workbook – keep styles by not using data_only
-    new_wb = openpyxl.load_workbook(XLSX_PATH)
+    # Load NEW (uploaded) workbook just to read data values
+    try:
+        new_wb = openpyxl.load_workbook(XLSX_PATH, data_only=True)
+    except Exception as exc:
+        print(f"merge_xlsx: Could not read new xlsx: {exc}")
+        old_wb.close()
+        return
 
-    old_dates, old_members = _read_data(old_wb)
-    new_dates, new_members = _read_data(new_wb)
+    _, new_members = _read_data(new_wb)
 
-    # Get the worksheet from the new workbook
+    # Get the worksheet from the OLD workbook (the base)
     for name in ('Team 8', 'Team X'):
-        if name in new_wb.sheetnames:
-            ws = new_wb[name]
+        if name in old_wb.sheetnames:
+            old_ws = old_wb[name]
             break
     else:
-        ws = new_wb[new_wb.sheetnames[0]]
+        old_ws = old_wb[old_wb.sheetnames[0]]
 
-    # Build a mapping from date_key -> column index in the NEW workbook
-    new_date_to_col = {date_key: col for col, (date_key, _) in new_dates.items()}
+    # Build date_key → column index map for the OLD workbook
+    old_date_to_col = {}
+    for col in range(5, old_ws.max_column + 1):
+        val = old_ws.cell(row=2, column=col).value
+        if val is not None:
+            key = val.strftime('%Y-%m-%d') if isinstance(val, datetime) else str(val)
+            old_date_to_col[key] = col
 
-    # Build a mapping from member name -> row index in the NEW workbook
-    new_name_to_row = {}
-    for row in range(3, min(13, ws.max_row + 1)):
-        name = ws.cell(row=row, column=2).value
+    # Build member name → row index map for the OLD workbook
+    old_name_to_row = {}
+    for row in range(3, min(13, old_ws.max_row + 1)):
+        name = old_ws.cell(row=row, column=2).value
         if name:
-            new_name_to_row[str(name).strip()] = row
+            old_name_to_row[str(name).strip()] = row
 
-    merged_count = 0
+    updated_count = 0
 
-    for member_name, old_steps in old_members.items():
-        if member_name not in new_name_to_row:
-            continue  # member not in new sheet, skip
-        row = new_name_to_row[member_name]
-        new_steps = new_members.get(member_name, {})
+    # For each member present in the NEW upload that also exists in the old
+    # spreadsheet, overwrite only non-zero cells.
+    for member_name, new_steps in new_members.items():
+        if member_name not in old_name_to_row:
+            continue  # member not in old sheet, skip
+        row = old_name_to_row[member_name]
 
-        for date_key, old_val in old_steps.items():
-            if date_key not in new_date_to_col:
-                continue  # date column not in new sheet
-            col = new_date_to_col[date_key]
-            new_val = new_steps.get(date_key, 0)
+        for date_key, new_val in new_steps.items():
+            if date_key not in old_date_to_col:
+                continue  # date column not in old sheet
+            col = old_date_to_col[date_key]
 
-            # If new cell is empty/zero but old had data, restore old value
-            if (not new_val or new_val == 0) and old_val and old_val != 0:
-                ws.cell(row=row, column=col).value = old_val
-                merged_count += 1
+            # Only overwrite when the new upload provides a real value
+            if new_val and new_val != 0:
+                old_ws.cell(row=row, column=col).value = new_val
+                updated_count += 1
 
-    if merged_count > 0:
-        new_wb.save(XLSX_PATH)
-        print(f"merge_xlsx: Restored {merged_count} cell(s) from previous version.")
+    # Always save old workbook as result to guarantee structure is preserved
+    old_wb.save(XLSX_PATH)
+
+    if updated_count > 0:
+        print(f"merge_xlsx: Updated {updated_count} cell(s) from new upload into existing spreadsheet.")
     else:
-        print("merge_xlsx: No cells needed restoring; new file already has all data.")
+        print("merge_xlsx: No new data to merge; existing spreadsheet structure preserved.")
 
     old_wb.close()
     new_wb.close()

@@ -6,7 +6,6 @@
     <title>🏃 Step Tracking Dashboard — Team 8 | 2026</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -562,7 +561,6 @@
             .heatmap-name { font-size: 9px; }
             .chart-container { min-height: 250px; }
             .leader-bar-wrapper { display: none; }
-            .upload-toast { left: 10px; right: 10px; text-align: center; }
         }
 
         /* Animations */
@@ -648,57 +646,22 @@
             cursor: pointer;
             transition: all 0.3s ease;
             white-space: nowrap;
+            text-decoration: none;
         }
 
         .upload-btn:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 16px rgba(18,65,145,0.25);
+            color: #fff;
         }
 
         .upload-btn:active {
             transform: translateY(0);
         }
 
-        /* Upload toast notification */
-        .upload-toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 14px 24px;
-            border-radius: 14px;
-            font-size: 13px;
-            font-weight: 600;
-            z-index: 200;
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: all 0.4s ease;
-            pointer-events: none;
-        }
-
-        .upload-toast.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .upload-toast.success {
-            background: #00C48C;
-            color: #fff;
-        }
-
-        .upload-toast.error {
-            background: #FF3D71;
-            color: #fff;
-        }
-
-        .upload-toast.info {
-            background: #009DE0;
-            color: #fff;
-        }
-
     </style>
 </head>
 <body>
-    <div id="uploadToast" class="upload-toast"></div>
     <div class="dashboard">
         <!-- Header -->
         <div class="header animate">
@@ -707,10 +670,9 @@
                 <p>Step Tracking Challenge — Apr / May 2026 &nbsp;•&nbsp; Day 2 of 39</p>
             </div>
             <div class="header-right">
-                <label class="upload-btn" for="xlsxUpload" title="Upload spreadsheet">
+                <a class="upload-btn" href="https://github.com/eronbfr/Team-8-STC-Nokia/upload/main" target="_blank" rel="noopener" title="Enviar planilha ao repositório">
                     📤 Upload
-                    <input type="file" id="xlsxUpload" accept=".xlsx,.xls" style="display:none;" onchange="handleUpload(this)">
-                </label>
+                </a>
                 
                 <div class="header-badge">
                     <div class="pulse-dot"></div>
@@ -826,7 +788,7 @@
         </div>
 
         <div class="footer">
-            Dashboard generated on 04/08/2026 at 20:14 &nbsp;•&nbsp; Step Tracking Challenge 2026 — Team 8
+            Dashboard generated on 04/08/2026 at 20:26 &nbsp;•&nbsp; Step Tracking Challenge 2026 — Team 8
         </div>
     </div>
 
@@ -1247,276 +1209,6 @@
 
         animateValue('kpi-total', 0, 50000, 1500);
         animateValue('kpi-avg', 0, 25000, 1200);
-
-        // ===== UPLOAD HANDLER =====
-
-        const REPO_OWNER = 'eronbfr';
-        const REPO_NAME = 'Team-8-STC-Nokia';
-        const FILE_PATH = 'step-tracking_Team8.xlsx';
-        const BRANCH = 'main';
-        const TOKEN_KEY = 'gh_steps_token';
-
-        function showToast(msg, type) {
-            const t = document.getElementById('uploadToast');
-            t.textContent = msg;
-            t.className = 'upload-toast ' + type + ' show';
-            setTimeout(() => { t.classList.remove('show'); }, 6000);
-        }
-
-        function getToken() {
-            return localStorage.getItem(TOKEN_KEY);
-        }
-
-        function promptToken() {
-            const token = prompt(
-                'Para enviar a planilha ao repositório, informe seu GitHub Personal Access Token (classic) com permissão "repo".\n\n' +
-                'Crie em: github.com > Settings > Developer settings > Personal access tokens.\n' +
-                'O token será salvo apenas no seu navegador.'
-            );
-            if (token && token.trim()) {
-                localStorage.setItem(TOKEN_KEY, token.trim());
-                return token.trim();
-            }
-            return null;
-        }
-
-        async function getFileSha(token) {
-            try {
-                const resp = await fetch(
-                    'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + FILE_PATH + '?ref=' + BRANCH,
-                    { headers: { 'Authorization': 'Bearer ' + token } }
-                );
-                if (resp.ok) {
-                    const data = await resp.json();
-                    return data.sha;
-                }
-            } catch (e) {
-                // file may not exist yet
-            }
-            return null;
-        }
-
-        async function uploadToGitHub(file) {
-            let token = getToken();
-            if (!token) {
-                token = promptToken();
-                if (!token) {
-                    showToast('❌ Upload cancelado — token não fornecido.', 'error');
-                    return false;
-                }
-            }
-
-            showToast('⏳ Enviando planilha ao repositório...', 'info');
-
-            try {
-                // Read file as base64
-                const base64 = await new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                        const bytes = new Uint8Array(reader.result);
-                        let binary = '';
-                        for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-                        resolve(btoa(binary));
-                    };
-                    reader.onerror = reject;
-                    reader.readAsArrayBuffer(file);
-                });
-
-                // Get current file SHA (required for updating an existing file)
-                const sha = await getFileSha(token);
-
-                const body = {
-                    message: 'Update step-tracking spreadsheet',
-                    content: base64,
-                    branch: BRANCH
-                };
-                if (sha) body.sha = sha;
-
-                const resp = await fetch(
-                    'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + FILE_PATH,
-                    {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': 'Bearer ' + token,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(body)
-                    }
-                );
-
-                if (resp.ok) {
-                    showToast('✅ Planilha enviada! O dashboard será atualizado automaticamente em instantes.', 'success');
-                    return true;
-                } else {
-                    const err = await resp.json();
-                    if (resp.status === 401 || resp.status === 403) {
-                        localStorage.removeItem(TOKEN_KEY);
-                        showToast('❌ Token inválido ou sem permissão. Tente novamente no próximo upload.', 'error');
-                    } else {
-                        showToast('❌ Erro ao enviar: ' + (err.message || resp.statusText), 'error');
-                    }
-                    return false;
-                }
-            } catch (err) {
-                showToast('❌ Erro de rede: ' + err.message, 'error');
-                return false;
-            }
-        }
-
-        async function handleUpload(input) {
-            const file = input.files[0];
-            if (!file) return;
-
-            // Upload to GitHub repository
-            await uploadToGitHub(file);
-
-            // Also read and update local dashboard immediately
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const arrayBuffer = e.target.result;
-                try {
-                    const wb = XLSX.read(new Uint8Array(arrayBuffer), { type: 'array', cellDates: true });
-                    const ws = wb.Sheets[wb.SheetNames[0]];
-                    const data = XLSX.utils.sheet_to_json(ws, { header: 1, defval: 0 });
-
-                    // Parse dates from row 2 (index 1), cols E+ (index 4+)
-                    const dateRow = data[1] || [];
-                    const newDates = [];
-                    for (let c = 4; c < dateRow.length; c++) {
-                        if (dateRow[c]) newDates.push(dateRow[c]);
-                    }
-                    const numDays = newDates.length;
-
-                    // Parse members (rows 3-12 = index 2-11)
-                    const newMembers = [];
-                    const colors = ["#124191", "#009DE0", "#FF3D71", "#00C48C", "#FFA940", "#7B61FF", "#FF6F91", "#0080C0", "#F7B731", "#26D07C"];
-                    let today = new Date();
-                    today.setHours(0,0,0,0);
-                    let elapsed = 0;
-                    for (let d = 0; d < numDays; d++) {
-                        const dt = new Date(newDates[d]);
-                        if (dt <= today) elapsed++;
-                    }
-
-                    for (let r = 2; r < Math.min(12, data.length); r++) {
-                        const row = data[r];
-                        if (!row || !row[1]) continue;
-
-                        const existingMember = memberData.find(m => m.name === row[1]);
-                        const daily = [];
-                        let total = 0;
-                        for (let c = 4; c < 4 + numDays; c++) {
-                            let v = typeof row[c] === 'number' ? row[c] : 0;
-                            const idx = c - 4;
-                            if (v === 0 && existingMember && idx < existingMember.daily.length && existingMember.daily[idx]) {
-                                v = existingMember.daily[idx];
-                            }
-                            daily.push(v);
-                            total += v;
-                        }
-                        newMembers.push({
-                            name: row[1],
-                            daily: daily,
-                            total: total,
-                            avg: Math.round(total / Math.max(elapsed, 1)),
-                            color: colors[(r - 2) % colors.length]
-                        });
-                    }
-
-                    if (newMembers.length === 0) {
-                        showToast('Nenhum dado válido encontrado no arquivo.', 'error');
-                        return;
-                    }
-
-                    // Update global data
-                    memberData.length = 0;
-                    newMembers.forEach(m => memberData.push(m));
-
-                    // Rebuild all charts
-                    rebuildAll(elapsed, numDays);
-                } catch (err) {
-                    showToast('❌ Erro ao ler arquivo: ' + err.message, 'error');
-                    console.error(err);
-                }
-            };
-            reader.readAsArrayBuffer(file);
-            input.value = '';
-        }
-
-        function rebuildAll(elapsed, totalDays) {
-            // Update KPIs
-            let teamTotal = 0;
-            memberData.forEach(m => teamTotal += m.total);
-            const teamAvg = Math.round(teamTotal / Math.max(elapsed, 1));
-            document.getElementById('kpi-total').textContent = teamTotal.toLocaleString();
-            document.getElementById('kpi-avg').textContent = teamAvg.toLocaleString();
-
-            // Rebuild daily chart
-            if (dailyChart) dailyChart.destroy();
-            const ctx = document.getElementById('dailyChart').getContext('2d');
-            const totals = [];
-            for (let i = 0; i < elapsed; i++) {
-                let sum = 0;
-                memberData.forEach(m => sum += (m.daily[i] || 0));
-                totals.push(sum);
-            }
-            const gradient = ctx.createLinearGradient(0, 0, 0, 340);
-            gradient.addColorStop(0, 'rgba(18,65,145,0.25)');
-            gradient.addColorStop(1, 'rgba(18,65,145,0.02)');
-            dailyChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: shortLabels.slice(0, elapsed),
-                    datasets: [{
-                        label: 'Team Total',
-                        data: totals,
-                        borderColor: '#124191',
-                        backgroundColor: gradient,
-                        fill: true, tension: 0.4, pointRadius: 4,
-                        pointBackgroundColor: '#124191', pointBorderColor: '#fff',
-                        pointBorderWidth: 2, borderWidth: 3,
-                    }, {
-                        label: 'Daily Goal',
-                        data: Array(elapsed).fill(DAILY_GOAL * memberData.length),
-                        borderColor: 'rgba(255,61,113,0.6)',
-                        borderDash: [8, 4], borderWidth: 2, pointRadius: 0, fill: false,
-                    }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: true, position: 'top', labels: { usePointStyle: true, padding: 20 } } },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: 'rgba(226,232,240,0.6)' },
-                            ticks: { callback: v => (v/1000).toFixed(0) + 'k' } },
-                        x: { grid: { display: false } }
-                    },
-                    interaction: { mode: 'index', intersect: false }
-                }
-            });
-
-            // Rebuild leaderboard
-            const lb = document.getElementById('leaderboard');
-            lb.innerHTML = '';
-            const sorted = [...memberData].sort((a, b) => b.total - a.total);
-            const maxSteps = sorted[0]?.total || 1;
-            sorted.forEach((m, i) => {
-                const cls = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
-                const rankCls = i >= 3 ? 'other' : '';
-                const pct = (m.total / maxSteps * 100).toFixed(0);
-                lb.innerHTML += `
-                    <div class="leader-row ${cls}">
-                        <div class="leader-rank ${rankCls}">${i+1}</div>
-                        <div class="leader-info">
-                            <div class="leader-name">${m.name}</div>
-                            <div class="leader-avg">⌀ ${m.avg.toLocaleString()} / day</div>
-                        </div>
-                        <div class="leader-bar-wrapper">
-                            <div class="leader-bar" style="width: ${pct}%; background: ${m.color};"></div>
-                        </div>
-                        <div class="leader-steps">${m.total.toLocaleString()}</div>
-                    </div>`;
-            });
-        }
     </script>
 </body>
 </html>
