@@ -866,7 +866,7 @@ def generate_html(dates, members, is_demo):
                 <p>Step Tracking Challenge — Apr / May 2026 &nbsp;•&nbsp; Day {days_elapsed} of {days_total}</p>
             </div>
             <div class="header-right">
-                <a class="upload-btn" href="https://github.com/eronbfr/Team-8-STC-Nokia/upload/main" target="_blank" rel="noopener" title="Enviar planilha ao repositório">
+                <a class="upload-btn" href="https://github.com/eronbfr/Team-8-STC-Nokia/upload/main" title="Enviar planilha ao repositório">
                     📤 Upload
                 </a>
                 
