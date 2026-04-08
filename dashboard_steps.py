@@ -1659,7 +1659,7 @@ def generate_html(dates, members, is_demo):
                 // 1. Get current file SHA (if it exists)
                 var sha = null;
                 var getResp = await fetch(API_BASE + '/repos/' + OWNER + '/' + REPO + '/contents/' + FILE_PATH, {{
-                    headers: {{ 'Authorization': 'token ' + token }}
+                    headers: {{ 'Authorization': 'Bearer ' + token }}
                 }});
                 if (getResp.ok) {{
                     var data = await getResp.json();
@@ -1684,7 +1684,7 @@ def generate_html(dates, members, is_demo):
                 var putResp = await fetch(API_BASE + '/repos/' + OWNER + '/' + REPO + '/contents/' + FILE_PATH, {{
                     method: 'PUT',
                     headers: {{
-                        'Authorization': 'token ' + token,
+                        'Authorization': 'Bearer ' + token,
                         'Content-Type': 'application/json'
                     }},
                     body: JSON.stringify(body)
@@ -1735,7 +1735,7 @@ def generate_html(dates, members, is_demo):
                 try {{
                     // Check latest workflow runs
                     var resp = await fetch(API_BASE + '/repos/' + OWNER + '/' + REPO + '/actions/runs?per_page=1&branch=main&event=push', {{
-                        headers: {{ 'Authorization': 'token ' + token }}
+                        headers: {{ 'Authorization': 'Bearer ' + token }}
                     }});
                     if (!resp.ok) {{
                         clearInterval(timer);
