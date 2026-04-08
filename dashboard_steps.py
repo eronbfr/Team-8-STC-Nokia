@@ -1706,8 +1706,8 @@ def generate_html(dates, members, is_demo):
                     setButtonLoading(false);
                     pendingFile = null;
                 }} else {{
-                    var err = await putResp.text();
-                    showToast('❌ Erro ao enviar: ' + putResp.status, 'error', 5000);
+                    var errText = await putResp.text();
+                    showToast('❌ Erro ao enviar: ' + putResp.status + ' — ' + errText.slice(0, 100), 'error', 5000);
                     setButtonLoading(false);
                     pendingFile = null;
                 }}

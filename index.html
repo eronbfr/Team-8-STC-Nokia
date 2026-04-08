@@ -912,7 +912,7 @@
         </div>
 
         <div class="footer">
-            Dashboard generated on 04/08/2026 at 21:28 &nbsp;•&nbsp; Step Tracking Challenge 2026 — Team 8
+            Dashboard generated on 04/08/2026 at 21:29 &nbsp;•&nbsp; Step Tracking Challenge 2026 — Team 8
         </div>
     </div>
 
@@ -1510,8 +1510,8 @@
                     setButtonLoading(false);
                     pendingFile = null;
                 } else {
-                    var err = await putResp.text();
-                    showToast('❌ Erro ao enviar: ' + putResp.status, 'error', 5000);
+                    var errText = await putResp.text();
+                    showToast('❌ Erro ao enviar: ' + putResp.status + ' — ' + errText.slice(0, 100), 'error', 5000);
                     setButtonLoading(false);
                     pendingFile = null;
                 }
