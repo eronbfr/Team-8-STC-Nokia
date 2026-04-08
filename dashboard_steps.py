@@ -963,7 +963,7 @@ def generate_html(dates, members, is_demo):
     <div id="tokenModalOverlay" class="token-modal-overlay">
         <div class="token-modal">
             <h3>🔑 GitHub Token Required</h3>
-            <p>To upload the spreadsheet directly to the repository, please enter a GitHub Personal Access Token with <strong>repo</strong> (or <strong>Contents read/write</strong>) permission.<br>The token will be saved locally in your browser.</p>
+            <p>To upload the spreadsheet directly to the repository, please enter a GitHub Personal Access Token with <strong>repo</strong> scope (classic) or <strong>Contents: Read and write</strong> permission (fine-grained).<br>The token will be saved locally in your browser.</p>
             <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
             <div class="token-modal-buttons">
                 <button class="btn-cancel" onclick="cancelToken()">Cancel</button>
@@ -1574,7 +1574,7 @@ def generate_html(dates, members, is_demo):
                 // Get the current file SHA (needed for updates)
                 let sha = null;
                 const getResp = await fetch(apiBase, {{
-                    headers: {{ 'Authorization': 'token ' + token }}
+                    headers: {{ 'Authorization': 'Bearer ' + token }}
                 }});
                 if (getResp.ok) {{
                     const meta = await getResp.json();
@@ -1595,7 +1595,7 @@ def generate_html(dates, members, is_demo):
                 const putResp = await fetch(apiBase, {{
                     method: 'PUT',
                     headers: {{
-                        'Authorization': 'token ' + token,
+                        'Authorization': 'Bearer ' + token,
                         'Content-Type': 'application/json'
                     }},
                     body: JSON.stringify(body)
