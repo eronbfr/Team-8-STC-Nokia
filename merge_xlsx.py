@@ -12,6 +12,7 @@ Logic:
 Run by the CI workflow before dashboard_steps.py.
 """
 
+import io
 import os
 import subprocess
 import sys
@@ -77,7 +78,7 @@ def _read_data(wb):
         steps = {}
         for col, (date_key, _) in dates.items():
             val = ws.cell(row=row, column=col).value
-            if val and not isinstance(val, str):
+            if val and isinstance(val, (int, float)):
                 steps[date_key] = val
         members[name] = steps
 
@@ -94,8 +95,6 @@ def merge():
     if old_bytes is None:
         print("merge_xlsx: No previous version in git history, skipping merge.")
         return
-
-    import io
 
     # Read old workbook
     try:

@@ -1512,8 +1512,9 @@ def generate_html(dates, members, is_demo):
                         for (let c = 4; c < 4 + numDays; c++) {{
                             let v = typeof row[c] === 'number' ? row[c] : 0;
                             // Merge: if new value is 0 but existing has data, keep existing
-                            if (v === 0 && existingMember && existingMember.daily[c - 4]) {{
-                                v = existingMember.daily[c - 4];
+                            const idx = c - 4;
+                            if (v === 0 && existingMember && idx < existingMember.daily.length && existingMember.daily[idx]) {{
+                                v = existingMember.daily[idx];
                             }}
                             daily.push(v);
                             total += v;
