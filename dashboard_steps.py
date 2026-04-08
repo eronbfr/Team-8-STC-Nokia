@@ -855,6 +855,129 @@ def generate_html(dates, members, is_demo):
             transform: translateY(0);
         }}
 
+        /* Upload modal overlay */
+        .upload-overlay {{
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }}
+        .upload-overlay.active {{
+            display: flex;
+        }}
+        .upload-modal {{
+            background: #fff;
+            border-radius: 16px;
+            padding: 28px 32px;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+        }}
+        .upload-modal h3 {{
+            margin: 0 0 8px;
+            font-size: 18px;
+            color: #1a202c;
+        }}
+        .upload-modal p {{
+            margin: 0 0 18px;
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.5;
+        }}
+        .upload-modal input[type="password"],
+        .upload-modal input[type="text"] {{
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            margin-bottom: 14px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+        }}
+        .upload-modal input:focus {{
+            border-color: #124191;
+        }}
+        .upload-modal-btns {{
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }}
+        .upload-modal-btns button {{
+            padding: 9px 20px;
+            border-radius: 10px;
+            border: none;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+        }}
+        .modal-btn-primary {{
+            background: var(--gradient-1);
+            color: #fff;
+        }}
+        .modal-btn-primary:hover {{
+            box-shadow: 0 4px 12px rgba(18,65,145,0.3);
+        }}
+        .modal-btn-cancel {{
+            background: #f1f5f9;
+            color: #64748b;
+        }}
+        .modal-btn-cancel:hover {{
+            background: #e2e8f0;
+        }}
+        /* Toast notification */
+        .upload-toast {{
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 10000;
+            padding: 14px 22px;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+            transform: translateX(120%);
+            transition: transform 0.4s cubic-bezier(.4,0,.2,1);
+            max-width: 360px;
+        }}
+        .upload-toast.show {{
+            transform: translateX(0);
+        }}
+        .upload-toast.success {{
+            background: linear-gradient(135deg, #10b981, #059669);
+        }}
+        .upload-toast.error {{
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }}
+        .upload-toast.info {{
+            background: linear-gradient(135deg, #124191, #009DE0);
+        }}
+        /* Spinner inside button */
+        .upload-spinner {{
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }}
+        @keyframes spin {{
+            to {{ transform: rotate(360deg); }}
+        }}
+
     </style>
 </head>
 <body>
@@ -866,9 +989,10 @@ def generate_html(dates, members, is_demo):
                 <p>Step Tracking Challenge — Apr / May 2026 &nbsp;•&nbsp; Day {days_elapsed} of {days_total}</p>
             </div>
             <div class="header-right">
-                <a class="upload-btn" href="https://github.com/eronbfr/Team-8-STC-Nokia/upload/main" title="Enviar planilha ao repositório">
+                <input type="file" id="xlsxFileInput" accept=".xlsx" style="display:none">
+                <button class="upload-btn" id="uploadBtn" title="Enviar planilha ao repositório">
                     📤 Upload
-                </a>
+                </button>
                 
                 <div class="header-badge">
                     <div class="pulse-dot"></div>
@@ -1405,6 +1529,235 @@ def generate_html(dates, members, is_demo):
 
         animateValue('kpi-total', 0, {int(total_team)}, 1500);
         animateValue('kpi-avg', 0, {int(avg_per_day_team)}, 1200);
+    </script>
+
+    <!-- Upload Token Modal -->
+    <div class="upload-overlay" id="tokenOverlay">
+        <div class="upload-modal">
+            <h3>🔑 GitHub Token</h3>
+            <p>Para enviar a planilha, insira seu Personal Access Token do GitHub (com permissão <strong>repo</strong>). Ele será salvo localmente no seu navegador.</p>
+            <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxx">
+            <div class="upload-modal-btns">
+                <button class="modal-btn-cancel" id="tokenCancel">Cancelar</button>
+                <button class="modal-btn-primary" id="tokenSave">Salvar e Enviar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast container -->
+    <div id="uploadToast" class="upload-toast"></div>
+
+    <script>
+    (function() {{
+        const OWNER = 'eronbfr';
+        const REPO = 'Team-8-STC-Nokia';
+        const FILE_PATH = 'step-tracking_Team8.xlsx';
+        const API_BASE = 'https://api.github.com';
+        const TOKEN_KEY = 'gh_pat_team8';
+
+        const uploadBtn = document.getElementById('uploadBtn');
+        const fileInput = document.getElementById('xlsxFileInput');
+        const tokenOverlay = document.getElementById('tokenOverlay');
+        const tokenInput = document.getElementById('tokenInput');
+        const tokenCancel = document.getElementById('tokenCancel');
+        const tokenSave = document.getElementById('tokenSave');
+        const toastEl = document.getElementById('uploadToast');
+
+        let pendingFile = null;
+
+        function showToast(msg, type, duration) {{
+            toastEl.textContent = msg;
+            toastEl.className = 'upload-toast ' + type + ' show';
+            if (duration) {{
+                setTimeout(function() {{ toastEl.classList.remove('show'); }}, duration);
+            }}
+        }}
+
+        function hideToast() {{
+            toastEl.classList.remove('show');
+        }}
+
+        function setButtonLoading(loading) {{
+            if (loading) {{
+                uploadBtn.disabled = true;
+                uploadBtn.innerHTML = '<span class="upload-spinner"></span> Enviando…';
+            }} else {{
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '📤 Upload';
+            }}
+        }}
+
+        // Click upload → open file picker
+        uploadBtn.addEventListener('click', function() {{
+            fileInput.value = '';
+            fileInput.click();
+        }});
+
+        // File selected
+        fileInput.addEventListener('change', function() {{
+            if (!fileInput.files || !fileInput.files[0]) return;
+            var file = fileInput.files[0];
+            if (!file.name.endsWith('.xlsx')) {{
+                showToast('❌ Selecione um arquivo .xlsx', 'error', 4000);
+                return;
+            }}
+            pendingFile = file;
+            var token = localStorage.getItem(TOKEN_KEY);
+            if (token) {{
+                doUpload(token);
+            }} else {{
+                tokenInput.value = '';
+                tokenOverlay.classList.add('active');
+                tokenInput.focus();
+            }}
+        }});
+
+        // Token modal cancel
+        tokenCancel.addEventListener('click', function() {{
+            tokenOverlay.classList.remove('active');
+            pendingFile = null;
+        }});
+
+        // Token modal save
+        tokenSave.addEventListener('click', function() {{
+            var token = tokenInput.value.trim();
+            if (!token) {{
+                tokenInput.style.borderColor = '#ef4444';
+                return;
+            }}
+            localStorage.setItem(TOKEN_KEY, token);
+            tokenOverlay.classList.remove('active');
+            doUpload(token);
+        }});
+
+        // Close modal on overlay click
+        tokenOverlay.addEventListener('click', function(e) {{
+            if (e.target === tokenOverlay) {{
+                tokenOverlay.classList.remove('active');
+                pendingFile = null;
+            }}
+        }});
+
+        function fileToBase64(file) {{
+            return new Promise(function(resolve, reject) {{
+                var reader = new FileReader();
+                reader.onload = function() {{
+                    var base64 = reader.result.split(',')[1];
+                    resolve(base64);
+                }};
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            }});
+        }}
+
+        async function doUpload(token) {{
+            if (!pendingFile) return;
+            setButtonLoading(true);
+            showToast('📤 Enviando planilha…', 'info', 0);
+
+            try {{
+                // 1. Get current file SHA (if it exists)
+                var sha = null;
+                var getResp = await fetch(API_BASE + '/repos/' + OWNER + '/' + REPO + '/contents/' + FILE_PATH, {{
+                    headers: {{ 'Authorization': 'Bearer ' + token }}
+                }});
+                if (getResp.ok) {{
+                    var data = await getResp.json();
+                    sha = data.sha;
+                }} else if (getResp.status === 401 || getResp.status === 403) {{
+                    localStorage.removeItem(TOKEN_KEY);
+                    showToast('❌ Token inválido ou sem permissão. Tente novamente.', 'error', 5000);
+                    setButtonLoading(false);
+                    pendingFile = null;
+                    return;
+                }}
+
+                // 2. Upload via Contents API
+                var base64Content = await fileToBase64(pendingFile);
+                var body = {{
+                    message: 'Update step-tracking spreadsheet via dashboard',
+                    content: base64Content,
+                    branch: 'main'
+                }};
+                if (sha) body.sha = sha;
+
+                var putResp = await fetch(API_BASE + '/repos/' + OWNER + '/' + REPO + '/contents/' + FILE_PATH, {{
+                    method: 'PUT',
+                    headers: {{
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    }},
+                    body: JSON.stringify(body)
+                }});
+
+                if (putResp.ok) {{
+                    showToast('✅ Planilha enviada! Atualizando dashboard…', 'success', 0);
+                    setButtonLoading(false);
+                    pendingFile = null;
+                    // Poll for workflow completion then refresh
+                    pollForRefresh(token);
+                }} else if (putResp.status === 401 || putResp.status === 403) {{
+                    localStorage.removeItem(TOKEN_KEY);
+                    showToast('❌ Token inválido ou sem permissão. Tente novamente.', 'error', 5000);
+                    setButtonLoading(false);
+                    pendingFile = null;
+                }} else if (putResp.status === 409) {{
+                    showToast('⚠️ Conflito ao enviar. Recarregue a página e tente novamente.', 'error', 5000);
+                    setButtonLoading(false);
+                    pendingFile = null;
+                }} else {{
+                    var errText = await putResp.text();
+                    showToast('❌ Erro ao enviar: ' + putResp.status + ' — ' + errText.slice(0, 100), 'error', 5000);
+                    setButtonLoading(false);
+                    pendingFile = null;
+                }}
+            }} catch (e) {{
+                showToast('❌ Erro de rede: ' + e.message, 'error', 5000);
+                setButtonLoading(false);
+                pendingFile = null;
+            }}
+        }}
+
+        // Poll GitHub Actions workflow until the dashboard is updated, then force refresh
+        function pollForRefresh(token) {{
+            var attempts = 0;
+            var maxAttempts = 60; // poll for up to ~5 min
+            var interval = 5000; // every 5 seconds
+
+            var timer = setInterval(async function() {{
+                attempts++;
+                if (attempts > maxAttempts) {{
+                    clearInterval(timer);
+                    showToast('⏱️ Tempo esgotado. Recarregue manualmente.', 'info', 6000);
+                    return;
+                }}
+
+                try {{
+                    // Check latest workflow runs
+                    var resp = await fetch(API_BASE + '/repos/' + OWNER + '/' + REPO + '/actions/runs?per_page=1&branch=main&event=push', {{
+                        headers: {{ 'Authorization': 'Bearer ' + token }}
+                    }});
+                    if (!resp.ok) {{
+                        clearInterval(timer);
+                        // Even without API access, try refreshing after a reasonable delay
+                        setTimeout(function() {{ location.reload(); }}, 60000);
+                        return;
+                    }}
+                    var data = await resp.json();
+                    if (data.workflow_runs && data.workflow_runs.length > 0) {{
+                        var run = data.workflow_runs[0];
+                        if (run.status === 'completed') {{
+                            clearInterval(timer);
+                            showToast('🔄 Dashboard atualizado! Recarregando…', 'success', 2000);
+                            setTimeout(function() {{ location.reload(); }}, 2000);
+                        }}
+                    }}
+                }} catch (e) {{
+                    // Silently continue polling
+                }}
+            }}, interval);
+        }}
+    }})();
     </script>
 </body>
 </html>"""
