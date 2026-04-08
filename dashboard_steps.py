@@ -1313,8 +1313,9 @@ def main():
         f.write(html)
 
     print(f"✅ Dashboard salvo em: {OUTPUT_PATH}")
-    print("🌐 Abrindo no navegador...")
-    webbrowser.open(f'file:///{OUTPUT_PATH.replace(os.sep, "/")}')
+    if not os.environ.get('CI'):
+        print("🌐 Abrindo no navegador...")
+        webbrowser.open(f'file:///{OUTPUT_PATH.replace(os.sep, "/")}')
 
 
 if __name__ == '__main__':
