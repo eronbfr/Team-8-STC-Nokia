@@ -48,6 +48,6 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add index.html
           # Only add xlsx if the merge produced/modified it
-          [ -f step-tracking_Team8.xlsx ] && git add step-tracking_Team8.xlsx
+          [ -f step-tracking_Team8.xlsx ] && git add step-tracking_Team8.xlsx || true
           git diff --cached --quiet || git commit -m "Auto-update dashboard from spreadsheet changes"
           git push
