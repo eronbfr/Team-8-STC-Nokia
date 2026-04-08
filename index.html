@@ -826,7 +826,7 @@
         </div>
 
         <div class="footer">
-            Dashboard generated on 04/08/2026 at 19:25 &nbsp;•&nbsp; Step Tracking Challenge 2026 — Team 8
+            Dashboard generated on 04/08/2026 at 19:51 &nbsp;•&nbsp; Step Tracking Challenge 2026 — Team 8
         </div>
     </div>
 
@@ -1253,28 +1253,124 @@
         const REPO_OWNER = 'eronbfr';
         const REPO_NAME = 'Team-8-STC-Nokia';
         const FILE_PATH = 'step-tracking_Team8.xlsx';
+        const BRANCH = 'main';
+        const TOKEN_KEY = 'gh_steps_token';
 
         function showToast(msg, type) {
             const t = document.getElementById('uploadToast');
             t.textContent = msg;
             t.className = 'upload-toast ' + type + ' show';
-            setTimeout(() => { t.classList.remove('show'); }, 5000);
+            setTimeout(() => { t.classList.remove('show'); }, 6000);
         }
 
-        function openRepoUpload() {
-            const url = 'https://github.com/' + REPO_OWNER + '/' + REPO_NAME + '/upload/main';
-            window.open(url, '_blank');
-            showToast('📂 Repository upload page opened — drop your file there to save it.', 'info');
+        function getToken() {
+            return localStorage.getItem(TOKEN_KEY);
         }
 
-        function handleUpload(input) {
+        function promptToken() {
+            const token = prompt(
+                'Para enviar a planilha ao repositório, informe seu GitHub Personal Access Token (classic) com permissão "repo".\n\n' +
+                'Crie em: github.com > Settings > Developer settings > Personal access tokens.\n' +
+                'O token será salvo apenas no seu navegador.'
+            );
+            if (token && token.trim()) {
+                localStorage.setItem(TOKEN_KEY, token.trim());
+                return token.trim();
+            }
+            return null;
+        }
+
+        async function getFileSha(token) {
+            try {
+                const resp = await fetch(
+                    'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + FILE_PATH + '?ref=' + BRANCH,
+                    { headers: { 'Authorization': 'Bearer ' + token } }
+                );
+                if (resp.ok) {
+                    const data = await resp.json();
+                    return data.sha;
+                }
+            } catch (e) {
+                // file may not exist yet
+            }
+            return null;
+        }
+
+        async function uploadToGitHub(file) {
+            let token = getToken();
+            if (!token) {
+                token = promptToken();
+                if (!token) {
+                    showToast('❌ Upload cancelado — token não fornecido.', 'error');
+                    return false;
+                }
+            }
+
+            showToast('⏳ Enviando planilha ao repositório...', 'info');
+
+            try {
+                // Read file as base64
+                const base64 = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        const bytes = new Uint8Array(reader.result);
+                        let binary = '';
+                        for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+                        resolve(btoa(binary));
+                    };
+                    reader.onerror = reject;
+                    reader.readAsArrayBuffer(file);
+                });
+
+                // Get current file SHA (required for updating an existing file)
+                const sha = await getFileSha(token);
+
+                const body = {
+                    message: 'Update step-tracking spreadsheet',
+                    content: base64,
+                    branch: BRANCH
+                };
+                if (sha) body.sha = sha;
+
+                const resp = await fetch(
+                    'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + FILE_PATH,
+                    {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': 'Bearer ' + token,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(body)
+                    }
+                );
+
+                if (resp.ok) {
+                    showToast('✅ Planilha enviada! O dashboard será atualizado automaticamente em instantes.', 'success');
+                    return true;
+                } else {
+                    const err = await resp.json();
+                    if (resp.status === 401 || resp.status === 403) {
+                        localStorage.removeItem(TOKEN_KEY);
+                        showToast('❌ Token inválido ou sem permissão. Tente novamente no próximo upload.', 'error');
+                    } else {
+                        showToast('❌ Erro ao enviar: ' + (err.message || resp.statusText), 'error');
+                    }
+                    return false;
+                }
+            } catch (err) {
+                showToast('❌ Erro de rede: ' + err.message, 'error');
+                return false;
+            }
+        }
+
+        async function handleUpload(input) {
             const file = input.files[0];
             if (!file) return;
 
-            // Open GitHub upload page for direct repo upload
-            openRepoUpload();
+            // Upload to GitHub repository
+            await uploadToGitHub(file);
 
-            // Also read as ArrayBuffer for local dashboard update
+            // Also read and update local dashboard immediately
             const reader = new FileReader();
             reader.onload = function(e) {
                 const arrayBuffer = e.target.result;
@@ -1306,13 +1402,11 @@
                         const row = data[r];
                         if (!row || !row[1]) continue;
 
-                        // Find matching existing member for merge
                         const existingMember = memberData.find(m => m.name === row[1]);
                         const daily = [];
                         let total = 0;
                         for (let c = 4; c < 4 + numDays; c++) {
                             let v = typeof row[c] === 'number' ? row[c] : 0;
-                            // Merge: if new value is 0 but existing has data, keep existing
                             const idx = c - 4;
                             if (v === 0 && existingMember && idx < existingMember.daily.length && existingMember.daily[idx]) {
                                 v = existingMember.daily[idx];
@@ -1330,7 +1424,7 @@
                     }
 
                     if (newMembers.length === 0) {
-                        showToast('No valid data found in the file.', 'error');
+                        showToast('Nenhum dado válido encontrado no arquivo.', 'error');
                         return;
                     }
 
@@ -1340,9 +1434,8 @@
 
                     // Rebuild all charts
                     rebuildAll(elapsed, numDays);
-                    showToast('✅ Spreadsheet loaded locally!', 'success');
                 } catch (err) {
-                    showToast('❌ Error reading file: ' + err.message, 'error');
+                    showToast('❌ Erro ao ler arquivo: ' + err.message, 'error');
                     console.error(err);
                 }
             };
