@@ -2,6 +2,7 @@ name: Update Dashboard
 
 on:
   push:
+    branches: [main]
     paths:
       - 'step-tracking_Team8.xlsx'
 
@@ -11,11 +12,21 @@ permissions:
 jobs:
   regenerate-dashboard:
     runs-on: ubuntu-latest
+    # Skip when the push was made by the workflow itself
+    if: github.actor != 'github-actions[bot]'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 2
+
+      - name: Verify spreadsheet exists
+        run: |
+          if [ ! -f step-tracking_Team8.xlsx ]; then
+            echo "::error::step-tracking_Team8.xlsx not found in repository"
+            exit 1
+          fi
+          echo "✅ step-tracking_Team8.xlsx found"
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -29,12 +40,14 @@ jobs:
         run: python merge_xlsx.py
 
       - name: Regenerate dashboard
-        run: python dashboard_steps.py
+        run: CI=true python dashboard_steps.py
 
       - name: Commit updated dashboard
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add index.html step-tracking_Team8.xlsx
+          git add index.html
+          # Only add xlsx if the merge produced/modified it
+          [ -f step-tracking_Team8.xlsx ] && git add step-tracking_Team8.xlsx
           git diff --cached --quiet || git commit -m "Auto-update dashboard from spreadsheet changes"
           git push
