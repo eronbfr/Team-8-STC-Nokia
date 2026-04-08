@@ -809,37 +809,41 @@
         </div>
 
         
+        <div class="demo-banner">
+            <span class="demo-icon">🎯</span>
+            <span>DEMO MODE — The data below is simulated. Upload your Excel spreadsheet to see real data.</span>
+        </div>
 
         <!-- KPI Cards -->
         <div class="kpi-grid">
             <div class="kpi-card animate delay-1">
                 <div class="kpi-icon">👣</div>
                 <div class="kpi-label">Total Steps (Team)</div>
-                <div class="kpi-value" id="kpi-total">154,920</div>
+                <div class="kpi-value" id="kpi-total">218,611</div>
                 <div class="kpi-sub">Goal: 3,900,000</div>
             </div>
             <div class="kpi-card animate delay-2">
                 <div class="kpi-icon">📊</div>
                 <div class="kpi-label">Daily Avg / Team</div>
-                <div class="kpi-value" id="kpi-avg">77,460</div>
+                <div class="kpi-value" id="kpi-avg">109,306</div>
                 <div class="kpi-sub">Daily goal: 100,000</div>
             </div>
             <div class="kpi-card animate delay-3">
                 <div class="kpi-icon">🏆</div>
                 <div class="kpi-label">Top Performer</div>
-                <div class="kpi-value" style="font-size: 22px;">Rocío</div>
-                <div class="kpi-sub">47,000 steps</div>
+                <div class="kpi-value" style="font-size: 22px;">Ramiro</div>
+                <div class="kpi-sub">28,770 steps</div>
             </div>
             <div class="kpi-card animate delay-4">
                 <div class="kpi-icon">🔥</div>
                 <div class="kpi-label">Daily Record</div>
-                <div class="kpi-value">40,000</div>
-                <div class="kpi-sub">Rocío — Apr 08</div>
+                <div class="kpi-value">14,842</div>
+                <div class="kpi-sub">Ramiro — Apr 07</div>
             </div>
             <div class="kpi-card animate delay-5">
                 <div class="kpi-icon">🎯</div>
                 <div class="kpi-label">Progress</div>
-                <div class="kpi-value">4.0%</div>
+                <div class="kpi-value">5.6%</div>
                 <div class="kpi-sub">Day 2 of 39</div>
             </div>
         </div>
@@ -912,17 +916,17 @@
         </div>
 
         <div class="footer">
-            Dashboard generated on 04/08/2026 at 21:56 &nbsp;•&nbsp; Step Tracking Challenge 2026 — Team 8
+            Dashboard generated on 04/08/2026 at 21:58 &nbsp;•&nbsp; Step Tracking Challenge 2026 — Team 8
         </div>
     </div>
 
     <script>
         // Data
-        const memberData = [{"name": "Juan Carloss Moran", "total": 0, "daily": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 0, "color": "#124191"}, {"name": "Humberto Silva", "total": 25000, "daily": [13000, 12000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 12500, "color": "#009DE0"}, {"name": "Roc\u00edo P\u00e9rez", "total": 47000, "daily": [7000, 40000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 23500, "color": "#FF3D71"}, {"name": "Ruben Salomoni", "total": 0, "daily": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 0, "color": "#00C48C"}, {"name": "Eron Netto", "total": 20470, "daily": [7470, 13000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 10235, "color": "#FFA940"}, {"name": "Lizandro Ortiz Corzo", "total": 0, "daily": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 0, "color": "#7B61FF"}, {"name": "Alexis Rodriguez", "total": 12000, "daily": [12000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 6000, "color": "#FF6F91"}, {"name": "Cynthia Vellena", "total": 14000, "daily": [0, 14000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 7000, "color": "#0080C0"}, {"name": "Ramiro Campos", "total": 0, "daily": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 0, "color": "#F7B731"}, {"name": "Jesse Pereira Galvez", "total": 36450, "daily": [20000, 16450, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 18225, "color": "#26D07C"}];
+        const memberData = [{"name": "Juan Carloss Moran", "total": 20150, "daily": [12238, 7912, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 10075, "color": "#124191"}, {"name": "Humberto Silva", "total": 23026, "daily": [9307, 13719, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 11513, "color": "#009DE0"}, {"name": "Roc\u00edo P\u00e9rez", "total": 15023, "daily": [8370, 6653, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 7512, "color": "#FF3D71"}, {"name": "Ruben Salomoni", "total": 23479, "daily": [12286, 11193, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 11740, "color": "#00C48C"}, {"name": "Eron Netto", "total": 21450, "daily": [12640, 8810, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 10725, "color": "#FFA940"}, {"name": "Lizandro Ortiz Corzo", "total": 22146, "daily": [10658, 11488, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 11073, "color": "#7B61FF"}, {"name": "Alexis Rodriguez", "total": 27825, "daily": [14002, 13823, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 13912, "color": "#FF6F91"}, {"name": "Cynthia Vellena", "total": 19864, "daily": [8990, 10874, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 9932, "color": "#0080C0"}, {"name": "Ramiro Campos", "total": 28770, "daily": [14842, 13928, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 14385, "color": "#F7B731"}, {"name": "Jesse Pereira Galvez", "total": 16878, "daily": [8468, 8410, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 8439, "color": "#26D07C"}];
         const dateLabels = ["Apr 07", "Apr 08", "Apr 09", "Apr 10", "Apr 11", "Apr 12", "Apr 13", "Apr 14", "Apr 15", "Apr 16", "Apr 17", "Apr 18", "Apr 19", "Apr 20", "Apr 21", "Apr 22", "Apr 23", "Apr 24", "Apr 25", "Apr 26", "Apr 27", "Apr 28", "Apr 29", "Apr 30", "May 01", "May 02", "May 03", "May 04", "May 05", "May 06", "May 07", "May 08", "May 09", "May 10", "May 11", "May 12", "May 13", "May 14", "May 15"];
         const shortLabels = ["07/04", "08/04", "09/04", "10/04", "11/04", "12/04", "13/04", "14/04", "15/04", "16/04", "17/04", "18/04", "19/04", "20/04", "21/04", "22/04", "23/04", "24/04", "25/04", "26/04", "27/04", "28/04", "29/04", "30/04", "01/05", "02/05", "03/05", "04/05", "05/05", "06/05", "07/05", "08/05", "09/05", "10/05", "11/05", "12/05", "13/05", "14/05", "15/05"];
         const weekLabels = ["Week 15", "Week 16", "Week 17", "Week 18", "Week 19", "Week 20"];
-        const weeklyMemberData = {"Juan Carloss Moran": [0, 0, 0, 0, 0, 0], "Humberto Silva": [25000, 0, 0, 0, 0, 0], "Roc\u00edo P\u00e9rez": [47000, 0, 0, 0, 0, 0], "Ruben Salomoni": [0, 0, 0, 0, 0, 0], "Eron Netto": [20470, 0, 0, 0, 0, 0], "Lizandro Ortiz Corzo": [0, 0, 0, 0, 0, 0], "Alexis Rodriguez": [12000, 0, 0, 0, 0, 0], "Cynthia Vellena": [14000, 0, 0, 0, 0, 0], "Ramiro Campos": [0, 0, 0, 0, 0, 0], "Jesse Pereira Galvez": [36450, 0, 0, 0, 0, 0]};
+        const weeklyMemberData = {"Juan Carloss Moran": [20150, 0, 0, 0, 0, 0], "Humberto Silva": [23026, 0, 0, 0, 0, 0], "Roc\u00edo P\u00e9rez": [15023, 0, 0, 0, 0, 0], "Ruben Salomoni": [23479, 0, 0, 0, 0, 0], "Eron Netto": [21450, 0, 0, 0, 0, 0], "Lizandro Ortiz Corzo": [22146, 0, 0, 0, 0, 0], "Alexis Rodriguez": [27825, 0, 0, 0, 0, 0], "Cynthia Vellena": [19864, 0, 0, 0, 0, 0], "Ramiro Campos": [28770, 0, 0, 0, 0, 0], "Jesse Pereira Galvez": [16878, 0, 0, 0, 0, 0]};
         const DAILY_GOAL = 10000;
         const daysElapsed = 2;
 
@@ -1331,8 +1335,8 @@
             requestAnimationFrame(update);
         }
 
-        animateValue('kpi-total', 0, 154920, 1500);
-        animateValue('kpi-avg', 0, 77460, 1200);
+        animateValue('kpi-total', 0, 218611, 1500);
+        animateValue('kpi-avg', 0, 109305, 1200);
     </script>
 
     <!-- Upload Token Modal -->
