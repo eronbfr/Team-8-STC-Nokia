@@ -695,86 +695,10 @@
             color: #fff;
         }
 
-        /* Token modal */
-        .token-modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-        }
-        .token-modal-overlay.show {
-            display: flex;
-        }
-        .token-modal {
-            background: #fff;
-            border-radius: 16px;
-            padding: 28px 32px;
-            max-width: 420px;
-            width: 90%;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-            font-family: 'Inter', sans-serif;
-        }
-        .token-modal h3 {
-            margin: 0 0 12px;
-            font-size: 16px;
-            color: #124191;
-        }
-        .token-modal p {
-            margin: 0 0 16px;
-            font-size: 13px;
-            color: #555;
-            line-height: 1.5;
-        }
-        .token-modal input {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: 'Inter', sans-serif;
-            box-sizing: border-box;
-        }
-        .token-modal-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 16px;
-            justify-content: flex-end;
-        }
-        .token-modal-buttons button {
-            padding: 8px 18px;
-            border-radius: 8px;
-            border: none;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-        }
-        .token-modal-buttons .btn-cancel {
-            background: #e5e5e5;
-            color: #333;
-        }
-        .token-modal-buttons .btn-save {
-            background: linear-gradient(135deg, #00C48C 0%, #009DE0 100%);
-            color: #fff;
-        }
     </style>
 </head>
 <body>
     <div id="uploadToast" class="upload-toast"></div>
-    <div id="tokenModalOverlay" class="token-modal-overlay">
-        <div class="token-modal">
-            <h3>🔑 GitHub Token Required</h3>
-            <p>To upload the spreadsheet directly to the repository, please enter a GitHub Personal Access Token with <strong>repo</strong> scope (classic) or <strong>Contents: Read and write</strong> permission (fine-grained).<br>The token will be saved locally in your browser.</p>
-            <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-            <div class="token-modal-buttons">
-                <button class="btn-cancel" onclick="cancelToken()">Cancel</button>
-                <button class="btn-save" onclick="confirmToken()">Save &amp; Upload</button>
-            </div>
-        </div>
-    </div>
     <div class="dashboard">
         <!-- Header -->
         <div class="header animate">
@@ -902,7 +826,7 @@
         </div>
 
         <div class="footer">
-            Dashboard generated on 04/08/2026 at 19:12 &nbsp;•&nbsp; Step Tracking Challenge 2026 — Team 8
+            Dashboard generated on 04/08/2026 at 19:25 &nbsp;•&nbsp; Step Tracking Challenge 2026 — Team 8
         </div>
     </div>
 
@@ -1329,7 +1253,6 @@
         const REPO_OWNER = 'eronbfr';
         const REPO_NAME = 'Team-8-STC-Nokia';
         const FILE_PATH = 'step-tracking_Team8.xlsx';
-        let pendingFileBase64 = null;
 
         function showToast(msg, type) {
             const t = document.getElementById('uploadToast');
@@ -1338,99 +1261,18 @@
             setTimeout(() => { t.classList.remove('show'); }, 5000);
         }
 
-        function getToken() {
-            return localStorage.getItem('gh_token_stc') || null;
-        }
-
-        function promptForToken() {
-            document.getElementById('tokenModalOverlay').classList.add('show');
-            document.getElementById('tokenInput').value = '';
-            document.getElementById('tokenInput').focus();
-        }
-
-        function cancelToken() {
-            document.getElementById('tokenModalOverlay').classList.remove('show');
-            pendingFileBase64 = null;
-            showToast('Upload cancelled — no token provided.', 'info');
-        }
-
-        function confirmToken() {
-            const val = document.getElementById('tokenInput').value.trim();
-            if (!val) return;
-            localStorage.setItem('gh_token_stc', val);
-            document.getElementById('tokenModalOverlay').classList.remove('show');
-            if (pendingFileBase64) {
-                pushToRepo(pendingFileBase64);
-                pendingFileBase64 = null;
-            }
-        }
-
-        async function pushToRepo(base64Content) {
-            const token = getToken();
-            if (!token) {
-                pendingFileBase64 = base64Content;
-                promptForToken();
-                return;
-            }
-            showToast('⏳ Uploading to repository…', 'info');
-            try {
-                const apiBase = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + FILE_PATH;
-                // Get the current file SHA (needed for updates)
-                let sha = null;
-                const getResp = await fetch(apiBase, {
-                    headers: { 'Authorization': 'Bearer ' + token }
-                });
-                if (getResp.ok) {
-                    const meta = await getResp.json();
-                    sha = meta.sha;
-                } else if (getResp.status === 401 || getResp.status === 403) {
-                    localStorage.removeItem('gh_token_stc');
-                    showToast('❌ Invalid or expired token. Please try uploading again.', 'error');
-                    return;
-                }
-
-                const body = {
-                    message: 'Update spreadsheet via dashboard upload',
-                    content: base64Content,
-                    branch: 'main'
-                };
-                if (sha) body.sha = sha;
-
-                const putResp = await fetch(apiBase, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': 'Bearer ' + token,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(body)
-                });
-                if (putResp.ok) {
-                    showToast('✅ Spreadsheet saved to repository! Dashboard will update automatically.', 'success');
-                } else if (putResp.status === 401 || putResp.status === 403) {
-                    localStorage.removeItem('gh_token_stc');
-                    showToast('❌ Token rejected. Please try uploading again.', 'error');
-                } else {
-                    const err = await putResp.json();
-                    showToast('❌ Upload failed: ' + (err.message || putResp.status), 'error');
-                }
-            } catch (err) {
-                showToast('❌ Network error: ' + err.message, 'error');
-                console.error(err);
-            }
+        function openRepoUpload() {
+            const url = 'https://github.com/' + REPO_OWNER + '/' + REPO_NAME + '/upload/main';
+            window.open(url, '_blank');
+            showToast('📂 Repository upload page opened — drop your file there to save it.', 'info');
         }
 
         function handleUpload(input) {
             const file = input.files[0];
             if (!file) return;
 
-            // Read file as base64 for GitHub API
-            const base64Reader = new FileReader();
-            base64Reader.onload = function(ev) {
-                const base64 = ev.target.result.split(',')[1];
-                // Push to repo automatically
-                pushToRepo(base64);
-            };
-            base64Reader.readAsDataURL(file);
+            // Open GitHub upload page for direct repo upload
+            openRepoUpload();
 
             // Also read as ArrayBuffer for local dashboard update
             const reader = new FileReader();
