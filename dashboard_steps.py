@@ -15,6 +15,7 @@ from datetime import datetime, timedelta
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # Try multiple possible file names
 _EXCEL_CANDIDATES = [
+    'step-tracking_Team8.xlsx',
     'step-tracking 2026 - Team 8.xlsx',
     'step-tracking_Team 8.xlsx',
     'step-tracking_Team 8.csv',
@@ -878,10 +879,62 @@ def generate_html(dates, members, is_demo):
             background: #FF3D71;
             color: #fff;
         }}
+
+        .upload-toast.info {{
+            background: #009DE0;
+            color: #fff;
+        }}
+
+        /* GitHub token modal */
+        .modal-overlay {{
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 300;
+            justify-content: center;
+            align-items: center;
+        }}
+        .modal-overlay.show {{ display: flex; }}
+        .modal-box {{
+            background: #fff;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 460px;
+            width: 90%;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+        }}
+        .modal-box h3 {{ margin-bottom: 12px; font-size: 18px; }}
+        .modal-box p {{ font-size: 13px; color: #4A5568; margin-bottom: 16px; line-height: 1.5; }}
+        .modal-box input[type="password"] {{
+            width: 100%; padding: 10px 14px; border: 1px solid #E2E8F0;
+            border-radius: 10px; font-size: 14px; margin-bottom: 16px;
+            font-family: 'JetBrains Mono', monospace;
+        }}
+        .modal-actions {{ display: flex; gap: 10px; justify-content: flex-end; }}
+        .modal-actions button {{
+            padding: 8px 20px; border: none; border-radius: 10px;
+            font-size: 13px; font-weight: 600; cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }}
+        .modal-actions .btn-primary {{ background: var(--gradient-1); color: #fff; }}
+        .modal-actions .btn-cancel {{ background: #E2E8F0; color: #4A5568; }}
     </style>
 </head>
 <body>
     <div id="uploadToast" class="upload-toast"></div>
+    <!-- GitHub token modal -->
+    <div id="tokenModal" class="modal-overlay">
+        <div class="modal-box">
+            <h3>🔑 GitHub Token Required</h3>
+            <p>To save the spreadsheet to the repository, enter a GitHub Personal Access Token with <strong>repo contents write</strong> permission. The token is stored only in your browser's local storage.</p>
+            <input type="password" id="ghTokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeTokenModal()">Cancel</button>
+                <button class="btn-primary" onclick="submitToken()">Save &amp; Upload</button>
+            </div>
+        </div>
+    </div>
     <div class="dashboard">
         <!-- Header -->
         <div class="header animate">
@@ -1431,11 +1484,93 @@ def generate_html(dates, members, is_demo):
         animateValue('kpi-avg', 0, {int(avg_per_day_team)}, 1200);
 
         // ===== UPLOAD HANDLER =====
+        const GH_OWNER = 'eronbfr';
+        const GH_REPO = 'Team-8-STC-Nokia';
+        const GH_FILE_PATH = 'step-tracking_Team8.xlsx';
+        const GH_BRANCH = 'main';
+        let _pendingFileArrayBuffer = null;
+
         function showToast(msg, type) {{
             const t = document.getElementById('uploadToast');
             t.textContent = msg;
             t.className = 'upload-toast ' + type + ' show';
-            setTimeout(() => {{ t.classList.remove('show'); }}, 4000);
+            setTimeout(() => {{ t.classList.remove('show'); }}, 5000);
+        }}
+
+        function getGhToken() {{ return localStorage.getItem('gh_token'); }}
+        function setGhToken(tok) {{ localStorage.setItem('gh_token', tok); }}
+
+        function openTokenModal() {{ document.getElementById('tokenModal').classList.add('show'); }}
+        function closeTokenModal() {{ document.getElementById('tokenModal').classList.remove('show'); }}
+        function submitToken() {{
+            const tok = document.getElementById('ghTokenInput').value.trim();
+            if (!tok) return;
+            setGhToken(tok);
+            closeTokenModal();
+            if (_pendingFileArrayBuffer) {{
+                uploadToGitHub(_pendingFileArrayBuffer);
+                _pendingFileArrayBuffer = null;
+            }}
+        }}
+
+        function arrayBufferToBase64(buffer) {{
+            let binary = '';
+            const bytes = new Uint8Array(buffer);
+            for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
+            return btoa(binary);
+        }}
+
+        async function uploadToGitHub(arrayBuffer) {{
+            const token = getGhToken();
+            if (!token) {{
+                _pendingFileArrayBuffer = arrayBuffer;
+                openTokenModal();
+                return;
+            }}
+            showToast('⏳ Uploading spreadsheet to repository...', 'info');
+            try {{
+                const apiUrl = 'https://api.github.com/repos/' + GH_OWNER + '/' + GH_REPO + '/contents/' + GH_FILE_PATH;
+                // Get current file SHA
+                const getResp = await fetch(apiUrl + '?ref=' + GH_BRANCH, {{
+                    headers: {{ 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' }}
+                }});
+                let sha = null;
+                if (getResp.ok) {{
+                    const meta = await getResp.json();
+                    sha = meta.sha;
+                }}
+                // PUT the new file
+                const body = {{
+                    message: 'Update spreadsheet via dashboard upload',
+                    content: arrayBufferToBase64(arrayBuffer),
+                    branch: GH_BRANCH
+                }};
+                if (sha) body.sha = sha;
+                const putResp = await fetch(apiUrl, {{
+                    method: 'PUT',
+                    headers: {{
+                        'Authorization': 'token ' + token,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    }},
+                    body: JSON.stringify(body)
+                }});
+                if (putResp.ok) {{
+                    showToast('✅ Spreadsheet saved to repository! The dashboard will update automatically.', 'success');
+                }} else {{
+                    const err = await putResp.json();
+                    if (putResp.status === 401 || putResp.status === 403) {{
+                        localStorage.removeItem('gh_token');
+                        showToast('❌ Invalid or expired token. Please try again.', 'error');
+                        _pendingFileArrayBuffer = arrayBuffer;
+                        openTokenModal();
+                    }} else {{
+                        showToast('❌ GitHub error: ' + (err.message || putResp.status), 'error');
+                    }}
+                }}
+            }} catch (err) {{
+                showToast('❌ Network error: ' + err.message, 'error');
+            }}
         }}
 
         function handleUpload(input) {{
@@ -1443,8 +1578,9 @@ def generate_html(dates, members, is_demo):
             if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {{
+                const arrayBuffer = e.target.result;
                 try {{
-                    const wb = XLSX.read(e.target.result, {{ type: 'array', cellDates: true }});
+                    const wb = XLSX.read(new Uint8Array(arrayBuffer), {{ type: 'array', cellDates: true }});
                     const ws = wb.Sheets[wb.SheetNames[0]];
                     const data = XLSX.utils.sheet_to_json(ws, {{ header: 1, defval: 0 }});
 
@@ -1497,7 +1633,10 @@ def generate_html(dates, members, is_demo):
 
                     // Rebuild all charts
                     rebuildAll(elapsed, numDays);
-                    showToast('✅ Spreadsheet loaded successfully! (' + newMembers.length + ' members)', 'success');
+                    showToast('✅ Spreadsheet loaded! Saving to repository...', 'success');
+
+                    // Upload to GitHub repository (overwrites existing file)
+                    uploadToGitHub(arrayBuffer);
                 }} catch (err) {{
                     showToast('❌ Error reading file: ' + err.message, 'error');
                     console.error(err);
@@ -1606,8 +1745,9 @@ def main():
         f.write(html)
 
     print(f"✅ Dashboard salvo em: {OUTPUT_PATH}")
-    print("🌐 Abrindo no navegador...")
-    webbrowser.open(f'file:///{OUTPUT_PATH.replace(os.sep, "/")}')
+    if not os.environ.get('CI'):
+        print("🌐 Abrindo no navegador...")
+        webbrowser.open(f'file:///{OUTPUT_PATH.replace(os.sep, "/")}')
 
 
 if __name__ == '__main__':
