@@ -1532,7 +1532,7 @@ def generate_html(dates, members, is_demo):
                 const apiUrl = 'https://api.github.com/repos/' + GH_OWNER + '/' + GH_REPO + '/contents/' + GH_FILE_PATH;
                 // Get current file SHA
                 const getResp = await fetch(apiUrl + '?ref=' + GH_BRANCH, {{
-                    headers: {{ 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' }}
+                    headers: {{ 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github.v3+json' }}
                 }});
                 let sha = null;
                 if (getResp.ok) {{
@@ -1549,7 +1549,7 @@ def generate_html(dates, members, is_demo):
                 const putResp = await fetch(apiUrl, {{
                     method: 'PUT',
                     headers: {{
-                        'Authorization': 'token ' + token,
+                        'Authorization': 'Bearer ' + token,
                         'Accept': 'application/vnd.github.v3+json',
                         'Content-Type': 'application/json'
                     }},
