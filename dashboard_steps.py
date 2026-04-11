@@ -40,7 +40,7 @@ def read_excel_data():
         dates = [(datetime(2026, 4, 7) + timedelta(days=i)).strftime('%Y-%m-%d') for i in range(39)]
         names = ['Juan Carloss Moran', 'Humberto Silva', 'Rocío Pérez', 'Ruben Salomoni',
                  'Eron Netto', 'Lizandro Ortiz Corzo', 'Alexis Rodriguez',
-                 'Cynthia Villena', 'Ramiro Campos', 'Jesse Pereira Galvez']
+                 'Cynthia Villena', 'Ramiro Campos', 'Jessé Pereira Galvez']
         members = [{'name': n, 'daily_steps': [0]*39, 'total': 0} for n in names]
         return dates, members, True
 
