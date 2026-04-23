@@ -84,7 +84,9 @@ def read_excel_data():
         daily_steps = []
         for col in date_columns:
             val = ws.cell(row=row, column=col).value
-            # Only keep numeric values; treat blanks/strings/formulas as 0.
+            # Coerce to numeric; treat blanks/strings/formula errors as 0.
+            # `bool` is a subclass of `int` in Python, so check it first to
+            # avoid `True`/`False` being counted as 1/0 steps.
             if isinstance(val, bool) or not isinstance(val, (int, float)):
                 daily_steps.append(0)
             else:
@@ -195,8 +197,10 @@ def generate_html(dates, members, is_demo):
 
     # Fun real-world equivalences
     marathons = total_distance_km / 42.195
-    earth_pct = (total_distance_km / 40075.0) * 100  # Earth's circumference
-    eiffel_climbs = total_floors / 1665 * 100  # Eiffel Tower has ~1665 steps -> floors approx
+    earth_pct = (total_distance_km / 40075.0) * 100  # Earth's circumference (km)
+    # The Eiffel Tower has ~1,665 physical steps to the top, so we express
+    # the team's total in *complete* tower-climb equivalents.
+    eiffel_climbs = total_team / 1665
 
     # ----- Goal achievement & projection metrics -------------------------
     person_days_evaluated = 0
@@ -1370,7 +1374,7 @@ def generate_html(dates, members, is_demo):
                     <div class="health-item-body">
                         <div class="health-item-value">{total_floors:,.0f}</div>
                         <div class="health-item-label">Floors equivalent</div>
-                        <div class="health-item-sub">≈ {eiffel_climbs:.1f}% of an Eiffel Tower climb</div>
+                        <div class="health-item-sub">≈ {eiffel_climbs:,.0f} climbs to the top of the Eiffel Tower</div>
                     </div>
                 </div>
             </div>
