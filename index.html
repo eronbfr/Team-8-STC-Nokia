@@ -248,6 +248,174 @@
             margin-top: 4px;
         }
 
+        /* Health Impact band ------------------------------------------- */
+        .health-band {
+            background: var(--bg-card);
+            border-radius: 18px;
+            padding: 22px 26px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            margin-bottom: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+        .health-band::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #00C48C, #009DE0, #124191);
+        }
+        .health-band-title {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .health-band-title .health-tag {
+            background: linear-gradient(135deg, #00C48C 0%, #009E73 100%);
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 8px;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+        }
+        .health-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+        }
+        .health-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            background: var(--bg-secondary);
+            border-radius: 14px;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .health-item:hover {
+            transform: translateY(-2px);
+            border-color: var(--border);
+            background: var(--bg-card-hover);
+        }
+        .health-item-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        .health-item:nth-child(1) .health-item-icon { background: rgba(0,196,140,0.15); }
+        .health-item:nth-child(2) .health-item-icon { background: rgba(255,61,113,0.12); }
+        .health-item:nth-child(3) .health-item-icon { background: rgba(0,157,224,0.12); }
+        .health-item:nth-child(4) .health-item-icon { background: rgba(255,169,64,0.14); }
+        .health-item-body {
+            min-width: 0;
+        }
+        .health-item-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+            line-height: 1.1;
+        }
+        .health-item-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        .health-item-sub {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        /* Insight cards (consistency / projection) --------------------- */
+        .insight-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+        .insight-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 20px 22px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .insight-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+        .insight-card:nth-child(1) .insight-icon { background: rgba(18,65,145,0.10); }
+        .insight-card:nth-child(2) .insight-icon { background: rgba(0,157,224,0.10); }
+        .insight-card:nth-child(3) .insight-icon { background: rgba(0,196,140,0.10); }
+        .insight-body { flex: 1; min-width: 0; }
+        .insight-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+        }
+        .insight-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-top: 4px;
+        }
+        .insight-sub {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Leaderboard chips */
+        .leader-chips {
+            display: flex;
+            gap: 6px;
+            margin-top: 4px;
+            flex-wrap: wrap;
+        }
+        .leader-chip {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 7px;
+            border-radius: 999px;
+            background: rgba(0,196,140,0.12);
+            color: #009E73;
+            white-space: nowrap;
+        }
+        .leader-chip.streak {
+            background: rgba(255,169,64,0.14);
+            color: #B87300;
+        }
+
         /* Charts Grid */
         .charts-grid {
             display: grid;
@@ -502,6 +670,8 @@
             .kpi-grid { grid-template-columns: repeat(3, 1fr); }
             .charts-grid { grid-template-columns: 1fr; }
             .bottom-grid { grid-template-columns: 1fr; }
+            .health-grid { grid-template-columns: repeat(2, 1fr); }
+            .insight-grid { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 768px) {
@@ -541,6 +711,14 @@
             .heatmap-name { font-size: 10px; }
             .heatmap-cell { font-size: 9px; padding: 6px 1px; }
             .demo-banner { font-size: 12px; padding: 10px 14px; }
+            .health-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .health-band { padding: 16px 14px; border-radius: 14px; }
+            .health-item { padding: 10px 12px; gap: 10px; }
+            .health-item-icon { width: 36px; height: 36px; font-size: 17px; border-radius: 10px; }
+            .health-item-value { font-size: 16px; }
+            .insight-card { padding: 14px 16px; border-radius: 14px; gap: 12px; }
+            .insight-icon { width: 40px; height: 40px; font-size: 18px; }
+            .insight-value { font-size: 18px; }
         }
 
         @media (max-width: 480px) {
@@ -561,6 +739,7 @@
             .heatmap-name { font-size: 9px; }
             .chart-container { min-height: 250px; }
             .leader-bar-wrapper { display: none; }
+            .health-grid { grid-template-columns: 1fr; }
         }
 
         /* Animations */
@@ -844,6 +1023,76 @@
             </div>
         </div>
 
+        <!-- Health Impact band -->
+        <div class="health-band animate delay-2">
+            <div class="health-band-title">
+                <span class="health-tag">HEALTH</span>
+                Real-world impact of every step taken by the team
+            </div>
+            <div class="health-grid">
+                <div class="health-item">
+                    <div class="health-item-icon">📏</div>
+                    <div class="health-item-body">
+                        <div class="health-item-value">793.7 km</div>
+                        <div class="health-item-label">Distance walked</div>
+                        <div class="health-item-sub">≈ 18.8 marathons &nbsp;·&nbsp; 1.98% around Earth</div>
+                    </div>
+                </div>
+                <div class="health-item">
+                    <div class="health-item-icon">🔥</div>
+                    <div class="health-item-body">
+                        <div class="health-item-value">41,665 kcal</div>
+                        <div class="health-item-label">Calories burned</div>
+                        <div class="health-item-sub">≈ 167 chocolate bars worth</div>
+                    </div>
+                </div>
+                <div class="health-item">
+                    <div class="health-item-icon">⏱️</div>
+                    <div class="health-item-body">
+                        <div class="health-item-value">10,416 min</div>
+                        <div class="health-item-label">Active minutes</div>
+                        <div class="health-item-sub">≈ 173.6 hours of brisk walking</div>
+                    </div>
+                </div>
+                <div class="health-item">
+                    <div class="health-item-icon">🪜</div>
+                    <div class="health-item-body">
+                        <div class="health-item-value">521</div>
+                        <div class="health-item-label">Floors equivalent</div>
+                        <div class="health-item-sub">≈ 31.3% of an Eiffel Tower climb</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Insight cards: goal-hit rate / projection / consistency -->
+        <div class="insight-grid animate delay-3">
+            <div class="insight-card">
+                <div class="insight-icon">✅</div>
+                <div class="insight-body">
+                    <div class="insight-label">Goal Hit Rate</div>
+                    <div class="insight-value">26.5%</div>
+                    <div class="insight-sub">45 of 170 person-days reached 10,000</div>
+                </div>
+            </div>
+            <div class="insight-card">
+                <div class="insight-icon">📈</div>
+                <div class="insight-body">
+                    <div class="insight-label">Projected Total</div>
+                    <div class="insight-value">2,389,606</div>
+                    <div class="insight-sub">vs goal 3,900,000 &nbsp;·&nbsp; at current pace</div>
+                </div>
+            </div>
+            <div class="insight-card">
+                <div class="insight-icon">🧘</div>
+                <div class="insight-body">
+                    <div class="insight-label">Most Consistent</div>
+                    <div class="insight-value" style="font-size: 18px;">Cynthia</div>
+                    <div class="insight-sub">⌀ 7,828 steps/day, lowest variation</div>
+                </div>
+            </div>
+        </div>
+
         <!-- Main Charts Row -->
         <div class="charts-grid animate delay-2">
             <div class="chart-card">
@@ -852,9 +1101,9 @@
                     Team Daily Steps
                 </div>
                 <div class="tab-group">
-                    <button class="tab-btn active" onclick="setDailyChart('total')">Team Total</button>
-                    <button class="tab-btn" onclick="setDailyChart('individual')">Individual</button>
-                    <button class="tab-btn" onclick="setDailyChart('stacked')">Stacked</button>
+                    <button class="tab-btn active" onclick="setDailyChart('total', this)">Team Total</button>
+                    <button class="tab-btn" onclick="setDailyChart('individual', this)">Individual</button>
+                    <button class="tab-btn" onclick="setDailyChart('stacked', this)">Stacked</button>
                 </div>
                 <div class="chart-container" style="height: 340px;">
                     <canvas id="dailyChart"></canvas>
@@ -900,31 +1149,47 @@
             <div class="heatmap-grid" id="heatmap"></div>
         </div>
 
-        <!-- Individual Performance -->
-        <div class="chart-card animate delay-5" style="margin-bottom: 28px;">
-            <div class="chart-title">
-                <div class="chart-title-icon" style="background: rgba(18,65,145,0.08);">👤</div>
-                Individual Performance — Average vs Goal
+        <!-- Weekday pattern + Individual performance -->
+        <div class="bottom-grid">
+            <div class="chart-card animate delay-5">
+                <div class="chart-title">
+                    <div class="chart-title-icon" style="background: rgba(0,196,140,0.10);">📆</div>
+                    Average Steps by Day of Week
+                </div>
+                <div class="chart-container" style="height: 320px;">
+                    <canvas id="weekdayChart"></canvas>
+                </div>
             </div>
-            <div class="chart-container" style="height: 360px;">
-                <canvas id="individualChart"></canvas>
+            <div class="chart-card animate delay-5">
+                <div class="chart-title">
+                    <div class="chart-title-icon" style="background: rgba(18,65,145,0.08);">👤</div>
+                    Individual Performance — Average vs Goal
+                </div>
+                <div class="chart-container" style="height: 320px;">
+                    <canvas id="individualChart"></canvas>
+                </div>
             </div>
         </div>
 
         <div class="footer">
-            Dashboard generated on 04/23/2026 at 18:04 &nbsp;•&nbsp; Step Tracking Challenge 2026 — Team 8
+            Dashboard generated on 04/23/2026 at 18:08 &nbsp;•&nbsp; Step Tracking Challenge 2026 — Team 8
         </div>
     </div>
 
     <script>
         // Data
-        const memberData = [{"name": "Cynthia Villena", "total": 54795, "daily": [8807, 4371, 8893, 9535, 8181, 6556, 8452, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 3223, "color": "#124191"}, {"name": "Juan Carlos Moran", "total": 43028, "daily": [9090, 9669, 10895, 1603, 4606, 7165, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 2531, "color": "#009DE0"}, {"name": "Humberto Silva", "total": 211494, "daily": [5876, 15276, 11579, 20656, 18663, 15517, 12279, 14174, 12605, 16262, 10947, 10447, 19921, 15245, 12047, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 12441, "color": "#FF3D71"}, {"name": "Roc\u00edo P\u00e9rez", "total": 51577, "daily": [5840, 557, 3887, 2775, 2481, 1302, 1274, 2043, 4468, 823, 6450, 11671, 3263, 787, 3956, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 3034, "color": "#00C48C"}, {"name": "Ruben Salomoni", "total": 52406, "daily": [12037, 7215, 6561, 4786, 8038, 13769, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 3083, "color": "#FFA940"}, {"name": "Eron Netto", "total": 175597, "daily": [7470, 18027, 8460, 8220, 7410, 20111, 20208, 10310, 20017, 10940, 12355, 10730, 10809, 10530, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 10329, "color": "#7B61FF"}, {"name": "Lizardo Ortiz Corzo", "total": 56185, "daily": [2196, 3687, 4380, 4400, 6876, 816, 1935, 2347, 3402, 4281, 2467, 9337, 3907, 6154, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 3305, "color": "#FF6F91"}, {"name": "Alexis Rodriguez", "total": 163961, "daily": [14978, 14013, 10699, 8608, 15873, 18828, 6335, 11546, 10930, 11346, 6406, 17316, 17083, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 9645, "color": "#0080C0"}, {"name": "Ramiro Campos", "total": 93372, "daily": [2590, 8295, 1943, 2321, 6729, 4301, 2276, 5771, 7982, 12936, 11914, 9961, 6935, 5708, 3710, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 5492, "color": "#F7B731"}, {"name": "Jess\u00e9 Pereira Galvez", "total": 139208, "daily": [9551, 10764, 9361, 6749, 12314, 8927, 12176, 4130, 5020, 6560, 10497, 3312, 9747, 10890, 9352, 9858, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 8189, "color": "#26D07C"}];
+        const memberData = [{"name": "Cynthia Villena", "total": 54795, "daily": [8807, 4371, 8893, 9535, 8181, 6556, 8452, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 3223, "goalDays": 0, "streak": 0, "color": "#124191"}, {"name": "Juan Carlos Moran", "total": 43028, "daily": [9090, 9669, 10895, 1603, 4606, 7165, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 2531, "goalDays": 1, "streak": 1, "color": "#009DE0"}, {"name": "Humberto Silva", "total": 211494, "daily": [5876, 15276, 11579, 20656, 18663, 15517, 12279, 14174, 12605, 16262, 10947, 10447, 19921, 15245, 12047, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 12441, "goalDays": 14, "streak": 14, "color": "#FF3D71"}, {"name": "Roc\u00edo P\u00e9rez", "total": 51577, "daily": [5840, 557, 3887, 2775, 2481, 1302, 1274, 2043, 4468, 823, 6450, 11671, 3263, 787, 3956, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 3034, "goalDays": 1, "streak": 1, "color": "#00C48C"}, {"name": "Ruben Salomoni", "total": 52406, "daily": [12037, 7215, 6561, 4786, 8038, 13769, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 3083, "goalDays": 2, "streak": 1, "color": "#FFA940"}, {"name": "Eron Netto", "total": 175597, "daily": [7470, 18027, 8460, 8220, 7410, 20111, 20208, 10310, 20017, 10940, 12355, 10730, 10809, 10530, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 10329, "goalDays": 10, "streak": 9, "color": "#7B61FF"}, {"name": "Lizardo Ortiz Corzo", "total": 56185, "daily": [2196, 3687, 4380, 4400, 6876, 816, 1935, 2347, 3402, 4281, 2467, 9337, 3907, 6154, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 3305, "goalDays": 0, "streak": 0, "color": "#FF6F91"}, {"name": "Alexis Rodriguez", "total": 163961, "daily": [14978, 14013, 10699, 8608, 15873, 18828, 6335, 11546, 10930, 11346, 6406, 17316, 17083, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 9645, "goalDays": 10, "streak": 3, "color": "#0080C0"}, {"name": "Ramiro Campos", "total": 93372, "daily": [2590, 8295, 1943, 2321, 6729, 4301, 2276, 5771, 7982, 12936, 11914, 9961, 6935, 5708, 3710, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 5492, "goalDays": 2, "streak": 2, "color": "#F7B731"}, {"name": "Jess\u00e9 Pereira Galvez", "total": 139208, "daily": [9551, 10764, 9361, 6749, 12314, 8927, 12176, 4130, 5020, 6560, 10497, 3312, 9747, 10890, 9352, 9858, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "avg": 8189, "goalDays": 5, "streak": 1, "color": "#26D07C"}];
         const dateLabels = ["Apr 07", "Apr 08", "Apr 09", "Apr 10", "Apr 11", "Apr 12", "Apr 13", "Apr 14", "Apr 15", "Apr 16", "Apr 17", "Apr 18", "Apr 19", "Apr 20", "Apr 21", "Apr 22", "Apr 23", "Apr 24", "Apr 25", "Apr 26", "Apr 27", "Apr 28", "Apr 29", "Apr 30", "May 01", "May 02", "May 03", "May 04", "May 05", "May 06", "May 07", "May 08", "May 09", "May 10", "May 11", "May 12", "May 13", "May 14", "May 15"];
         const shortLabels = ["07/04", "08/04", "09/04", "10/04", "11/04", "12/04", "13/04", "14/04", "15/04", "16/04", "17/04", "18/04", "19/04", "20/04", "21/04", "22/04", "23/04", "24/04", "25/04", "26/04", "27/04", "28/04", "29/04", "30/04", "01/05", "02/05", "03/05", "04/05", "05/05", "06/05", "07/05", "08/05", "09/05", "10/05", "11/05", "12/05", "13/05", "14/05", "15/05"];
         const weekLabels = ["Week 15", "Week 16", "Week 17", "Week 18", "Week 19", "Week 20"];
         const weeklyMemberData = {"Cynthia Villena": [46343, 8452, 0, 0, 0, 0], "Juan Carlos Moran": [43028, 0, 0, 0, 0, 0], "Humberto Silva": [87567, 96635, 27292, 0, 0, 0], "Roc\u00edo P\u00e9rez": [16842, 29992, 4743, 0, 0, 0], "Ruben Salomoni": [52406, 0, 0, 0, 0, 0], "Eron Netto": [69698, 95369, 10530, 0, 0, 0], "Lizardo Ortiz Corzo": [22355, 27676, 6154, 0, 0, 0], "Alexis Rodriguez": [82999, 80962, 0, 0, 0, 0], "Ramiro Campos": [26179, 57775, 9418, 0, 0, 0], "Jess\u00e9 Pereira Galvez": [57666, 51442, 30100, 0, 0, 0]};
+        const weekdayAvg = [5712.45, 5260.7, 5538.533333333334, 4660.2, 6534.45, 8197.25, 8447.85];
+        const weekdayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
         const DAILY_GOAL = 10000;
-        const daysElapsed = 17;
+        // Cap elapsed days to the size of the data so we never read past
+        // the end of any per-member array.
+        const _maxDaily = memberData.reduce((m, x) => Math.max(m, x.daily.length), 0);
+        const daysElapsed = Math.min(17, _maxDaily);
 
         // Chart.js default config
         Chart.defaults.color = '#4A5568';
@@ -933,9 +1198,13 @@
 
         // ===== DAILY CHART =====
         let dailyChart;
-        function setDailyChart(mode) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
+        function setDailyChart(mode, btn) {
+            document.querySelectorAll('.tab-group .tab-btn').forEach(b => b.classList.remove('active'));
+            if (btn) {
+                btn.classList.add('active');
+            } else if (typeof event !== 'undefined' && event && event.target) {
+                event.target.classList.add('active');
+            }
             if (dailyChart) dailyChart.destroy();
             const ctx = document.getElementById('dailyChart').getContext('2d');
             const activeLabels = shortLabels.slice(0, daysElapsed);
@@ -1103,12 +1372,21 @@
                 const cls = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
                 const rankCls = i >= 3 ? 'other' : '';
                 const pct = (m.total / maxSteps * 100).toFixed(0);
+                const chips = [];
+                if (m.goalDays > 0) {
+                    chips.push('<span class="leader-chip">✓ ' + m.goalDays + ' goal-day' + (m.goalDays === 1 ? '' : 's') + '</span>');
+                }
+                if (m.streak >= 2) {
+                    chips.push('<span class="leader-chip streak">🔥 ' + m.streak + '-day streak</span>');
+                }
+                const chipsHtml = chips.length ? '<div class="leader-chips">' + chips.join('') + '</div>' : '';
                 lb.innerHTML += `
                     <div class="leader-row ${cls}">
                         <div class="leader-rank ${rankCls}">${i+1}</div>
                         <div class="leader-info">
                             <div class="leader-name">${m.name}</div>
                             <div class="leader-avg">⌀ ${m.avg.toLocaleString()} / day</div>
+                            ${chipsHtml}
                         </div>
                         <div class="leader-bar-wrapper">
                             <div class="leader-bar" style="width: ${pct}%; background: ${m.color};"></div>
@@ -1241,6 +1519,55 @@
                 // Pad
                 for (let i = days7Labels.length; i < 7; i++) {
                     grid.innerHTML += `<div class="heatmap-cell" style="background:rgba(226,232,240,0.3); color:#8892A4;">—</div>`;
+                }
+            });
+        })();
+
+        // ===== WEEKDAY PATTERN CHART =====
+        (function() {
+            const ctx = document.getElementById('weekdayChart').getContext('2d');
+            const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+            gradient.addColorStop(0, 'rgba(0,196,140,0.85)');
+            gradient.addColorStop(1, 'rgba(0,157,224,0.55)');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: weekdayLabels,
+                    datasets: [{
+                        label: 'Avg steps / member',
+                        data: weekdayAvg,
+                        backgroundColor: gradient,
+                        borderRadius: 10,
+                        borderWidth: 0,
+                    }, {
+                        label: 'Daily Goal',
+                        type: 'line',
+                        data: Array(7).fill(DAILY_GOAL),
+                        borderColor: 'rgba(255,61,113,0.6)',
+                        borderDash: [6, 4],
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        fill: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true, position: 'top', labels: { usePointStyle: true, padding: 16, font: { size: 11 } } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(ctx) {
+                                    return ctx.dataset.label + ': ' + Math.round(ctx.parsed.y).toLocaleString() + ' steps';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(226,232,240,0.6)' },
+                            ticks: { callback: v => (v/1000).toFixed(1) + 'k' } },
+                        x: { grid: { display: false } }
+                    }
                 }
             });
         })();
@@ -1537,10 +1864,16 @@
                 }
 
                 try {
-                    // Check latest workflow runs
-                    var resp = await fetch(API_BASE + '/repos/' + OWNER + '/' + REPO + '/actions/runs?per_page=1&branch=main&event=push', {
+                    // Check latest "Update Dashboard" workflow runs (by workflow file)
+                    var resp = await fetch(API_BASE + '/repos/' + OWNER + '/' + REPO + '/actions/workflows/update-dashboard.yml/runs?per_page=1&branch=main', {
                         headers: { 'Authorization': 'Bearer ' + token }
                     });
+                    if (!resp.ok) {
+                        // Fallback: try the generic runs endpoint
+                        resp = await fetch(API_BASE + '/repos/' + OWNER + '/' + REPO + '/actions/runs?per_page=1&branch=main', {
+                            headers: { 'Authorization': 'Bearer ' + token }
+                        });
+                    }
                     if (!resp.ok) {
                         clearInterval(timer);
                         // Even without API access, try refreshing after a reasonable delay
